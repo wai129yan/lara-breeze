@@ -4,24 +4,24 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable,SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $primaryKey = 'user_id';
     protected $fillable = [
         'name',
         'email',
         'password',
         'phone',
+        'bio',
+        'profile_image_url',
+
     ];
 
     /**
@@ -46,4 +46,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $dates = ['deleted_at'];
+
+    // Example Eloquent relationship: A user can have many posts
+    // public function posts()
+    // {
+    //     return $this->hasMany(Post::class, 'user_id');
+    // }
+
+    // // Example Eloquent relationship: A user can have many comments
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comment::class, 'user_id');
+    // }
 }

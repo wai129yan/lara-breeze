@@ -18,6 +18,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone')->nullable();
+            $table->text('bio')->nullable();
+            $table->string('profile_image_url', 255)->nullable();
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -48,3 +51,7 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
     }
 };
+
+
+
+ 
