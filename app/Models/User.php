@@ -11,9 +11,9 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
-    protected $primaryKey = 'user_id';
+    // protected $primaryKey = 'user_id';
     protected $fillable = [
         'name',
         'email',
@@ -21,7 +21,6 @@ class User extends Authenticatable
         'phone',
         'bio',
         'profile_image_url',
-
     ];
 
     /**
