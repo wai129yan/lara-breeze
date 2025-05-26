@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\UserController;
+// use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,4 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+Route::resource('users', UserController::class);
+Route::resource('tags', TagController::class);
+Route::resource('posts', PostController::class);
+Route::resource('categories', CategoryController::class);
+
+require __DIR__ . '/auth.php';
