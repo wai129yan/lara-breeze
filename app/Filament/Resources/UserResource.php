@@ -8,6 +8,7 @@ use App\Models\User;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Filament\Forms;
 use Filament\Tables;
@@ -18,7 +19,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
     public static function form(Form $form): Form
     {
@@ -64,7 +65,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('profile_image_url')
-                    ->rounded(),
+                    ->circular(),
                 Tables\Columns\TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
