@@ -16,7 +16,7 @@ class Tag extends Model
     ];
 
     // Optional: Custom primary key if needed
-    protected $primaryKey = 'tag_id';
+    // protected $primaryKey = 'tag_id';
 
     // Optional: Use timestamps with timezone
     public $timestamps = true;
