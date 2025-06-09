@@ -67,6 +67,71 @@ class PostResource extends Resource
                         'hr',
                     ])
                     ->columnSpanFull(),
+                Forms\Components\Repeater::make('comments')
+                    ->relationship('comments')
+                    ->schema([
+                        Forms\Components\Select::make('user_id')
+                            ->relationship('user', 'name')
+                            ->required()
+                            ->label('User'),
+                        Forms\Components\Textarea::make('content')
+                            ->required()
+                            ->label('Comment'),
+                        Forms\Components\Repeater::make('replies')
+                            ->relationship('replies')
+                            ->schema([
+                                Forms\Components\Select::make('user_id')
+                                    ->relationship('user', 'name')
+                                    ->required()
+                                    ->label('User'),
+                                Forms\Components\Textarea::make('content')
+                                    ->required()
+                                    ->label('Reply'),
+                            ])
+                            ->saveRelationshipsUsing(function ($component, $state, $record) {
+                                // Delete existing replies that are not in the current state
+                                $existingIds = collect($state)->pluck('id')->filter();
+                                $record->replies()->whereNotIn('id', $existingIds)->delete();
+
+                                // Create or update replies
+                                foreach ($state as $item) {
+                                    if (isset($item['id'])) {
+                                        // Update existing reply
+                                        $record->replies()->where('id', $item['id'])->update([
+                                            'user_id' => $item['user_id'] ?? 1,
+                                            'content' => $item['content'],
+                                            'post_id' => $record->post_id ?? $record->id,
+                                        ]);
+                                    } else {
+                                        // Create new reply
+                                        $record->replies()->create([
+                                            'user_id' => $item['user_id'] ?? 1,
+                                            'content' => $item['content'],
+                                            'post_id' => $record->post_id ?? $record->id,
+                                            'parent_id' => $record->id,
+                                        ]);
+                                    }
+                                }
+                            })
+                            ->columnSpanFull()
+                            ->defaultItems(0)
+                            ->addActionLabel('Add Reply')
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => $state['content'] ?? null),
+                    ])
+                    ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                        $data['user_id'] = $data['user_id'] ?? 1;
+                        return $data;
+                    })
+                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data): array {
+                        $data['user_id'] = $data['user_id'] ?? 1;
+                        return $data;
+                    })
+                    ->columnSpanFull()
+                    ->defaultItems(0)
+                    ->addActionLabel('Add Comment')
+                    ->collapsible()
+                    ->itemLabel(fn(array $state): ?string => $state['content'] ?? null),
                 Select::make('status')
                     ->options([
                         'draft' => 'Draft',
@@ -100,6 +165,8 @@ class PostResource extends Resource
                 TextColumn::make('content')
                     ->markdown()
                     ->limit(50),
+                Tables\Columns\TextColumn::make('comments_count')
+                    ->counts('comments'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

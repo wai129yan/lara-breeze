@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
@@ -41,4 +42,21 @@ class Post extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // In App\Models\Post.php
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'post_id');
+    }
+
+    public function parentComments(): HasMany
+    {
+        return $this->comments()->whereNull('parent_id')->with(['replies.user', 'user']);
+    }
+
+    // public function comments(): HasMany
+    // {
+    //     return $this->hasMany(Comment::class)->whereNull('parent_id');  // Only top-level comments
+    // }
 }

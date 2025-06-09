@@ -47,6 +47,7 @@ class UserResource extends Resource
                     ->image()
                     ->imageEditor(),
             ]);
+        // ->extraAttributes(['class' => 'max-w-md mx-auto text-center']);
     }
 
     public static function table(Table $table): Table
