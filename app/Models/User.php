@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,9 +12,9 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
-    protected $primaryKey = 'user_id';
+    // protected $primaryKey = 'user_id';
     protected $fillable = [
         'name',
         'email',
@@ -21,7 +22,6 @@ class User extends Authenticatable
         'phone',
         'bio',
         'profile_image_url',
-
     ];
 
     /**
@@ -50,14 +50,31 @@ class User extends Authenticatable
     protected $dates = ['deleted_at'];
 
     // Example Eloquent relationship: A user can have many posts
-    // public function posts()
-    // {
-    //     return $this->hasMany(Post::class, 'user_id');
-    // }
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id');
+    }
 
-    // // Example Eloquent relationship: A user can have many comments
-    // public function comments()
-    // {
-    //     return $this->hasMany(Comment::class, 'user_id');
-    // }
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'user_id');
+    }
+
+    public function publishedPosts(): HasMany
+    {
+        return $this->posts()->where('status', 'published');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class)->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get draft posts by the user
+     */
+    public function draftPosts(): HasMany
+    {
+        return $this->posts()->where('status', 'draft');
+    }
 }

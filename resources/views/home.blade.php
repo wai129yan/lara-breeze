@@ -241,33 +241,38 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Post 1 -->
-                <article class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1551434678-e076c223a692" alt="Article"
-                            class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-6">
-                        <a href="#"
-                            class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Technology</a>
-                        <h3 class="text-xl font-bold mb-2">
-                            <a href="#" class="hover:text-primary transition">10 Essential Tools Every Developer
-                                Should
-                                Master in 2023</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">From code editors to productivity apps, discover the tools that
-                            will elevate your development workflow and boost your efficiency.</p>
-                        <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author"
-                                class="w-8 h-8 rounded-full mr-2">
-                            <div>
-                                <p class="text-sm font-medium">Alex Chen</p>
-                                <p class="text-xs text-gray-500">May 10, 2023 · 5 min read</p>
+                @foreach ($posts as $post)
+                    <article class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                        <a href="#">
+                            <img src="https://images.unsplash.com/photo-1551434678-e076c223a692" alt="Article"
+                                class="w-full h-48 object-cover">
+                        </a>
+                        <div class="p-6">
+                            <a href="#"
+                                class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Technology</a>
+                            <h3 class="text-xl font-bold mb-2">
+                                <a href="#" class="hover:text-primary transition">{{ $post->title }}</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">{{ generateExcerpt($post->content) }}</p>
+                            <div class="flex items-center">
+                                <a href="{{ route('users.show', $post->user->id) }}"><img
+                                        src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author"
+                                        class="w-8 h-8 rounded-full mr-2"></a>
+                                <div>
+                                    <p class="text-sm font-medium">
+                                        <a href="{{ route('users.show', $post->user->id) }}">
+                                            {{ $post->user->name }}
+                                        </a>
+                                    </p>
+                                    <p class="text-xs text-gray-500">May 10, 2023 · 5 min read</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </article>
+                    </article>
+                @endforeach
 
-                <!-- Post 2 -->
+
+                {{-- <!-- Post 2 -->
                 <article class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <a href="#">
                         <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1" alt="Article"
@@ -319,7 +324,7 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article> --}}
             </div>
         </section>
 
