@@ -55,6 +55,11 @@ class Post extends Model
         return $this->comments()->whereNull('parent_id')->with(['replies.user', 'user']);
     }
 
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class)->whereNotNull('parent_id');
+    }
+
     // public function comments(): HasMany
     // {
     //     return $this->hasMany(Comment::class)->whereNull('parent_id');  // Only top-level comments

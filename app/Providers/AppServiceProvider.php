@@ -11,14 +11,24 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->loadHelpers();
     }
 
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot(): void {}
+
+    private function loadHelpers(): void
     {
-        //
+        $helperFiles = [
+            app_path('Helpers/BlogHelper.php'),
+        ];
+
+        foreach ($helperFiles as $file) {
+            if (file_exists($file)) {
+                require_once $file;
+            }
+        }
     }
 }

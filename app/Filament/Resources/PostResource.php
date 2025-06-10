@@ -78,7 +78,6 @@ class PostResource extends Resource
                             ->required()
                             ->label('Comment'),
                         Forms\Components\Repeater::make('replies')
-                            ->relationship('replies')
                             ->schema([
                                 Forms\Components\Select::make('user_id')
                                     ->relationship('user', 'name')
@@ -88,44 +87,121 @@ class PostResource extends Resource
                                     ->required()
                                     ->label('Reply'),
                             ])
-                            ->saveRelationshipsUsing(function ($component, $state, $record) {
-                                // Delete existing replies that are not in the current state
-                                $existingIds = collect($state)->pluck('id')->filter();
-                                $record->replies()->whereNotIn('id', $existingIds)->delete();
-
-                                // Create or update replies
-                                foreach ($state as $item) {
-                                    if (isset($item['id'])) {
-                                        // Update existing reply
-                                        $record->replies()->where('id', $item['id'])->update([
-                                            'user_id' => $item['user_id'] ?? 1,
-                                            'content' => $item['content'],
-                                            'post_id' => $record->post_id ?? $record->id,
-                                        ]);
-                                    } else {
-                                        // Create new reply
-                                        $record->replies()->create([
-                                            'user_id' => $item['user_id'] ?? 1,
-                                            'content' => $item['content'],
-                                            'post_id' => $record->post_id ?? $record->id,
-                                            'parent_id' => $record->id,
-                                        ]);
-                                    }
-                                }
-                            })
                             ->columnSpanFull()
                             ->defaultItems(0)
                             ->addActionLabel('Add Reply')
                             ->collapsible()
                             ->itemLabel(fn(array $state): ?string => $state['content'] ?? null),
                     ])
-                    ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                    ->mutateRelationshipDataBeforeCreateUsing(function (array $data, $record): array {
                         $data['user_id'] = $data['user_id'] ?? 1;
+
+                        // Handle replies
+                        if (isset($data['replies'])) {
+                            foreach ($data['replies'] as &$reply) {
+                                $reply['user_id'] = $reply['user_id'] ?? 1;
+                                $reply['post_id'] = $record->id;
+                            }
+                        }
+
                         return $data;
                     })
-                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data): array {
+                    ->mutateRelationshipDataBeforeSaveUsing(function (array $data, $record): array {
                         $data['user_id'] = $data['user_id'] ?? 1;
+
+                        // Handle replies
+                        if (isset($data['replies'])) {
+                            foreach ($data['replies'] as &$reply) {
+                                $reply['user_id'] = $reply['user_id'] ?? 1;
+                                $reply['post_id'] = $record->post_id ?? $record->id;
+                            }
+                        }
+
                         return $data;
+                    })
+                    ->saveRelationshipsUsing(function ($component, $state, $record) {
+                        // Get all existing comment IDs that should be kept
+                        $existingCommentIds = collect($state)
+                            ->filter(fn($item) => isset($item['id']))
+                            ->pluck('id');
+
+                        // Delete comments that are not in the current state
+                        $record->comments()->whereNotIn('id', $existingCommentIds)->delete();
+
+                        foreach ($state as $commentData) {
+                            $comment = null;
+
+                            // Create or update the comment
+                            if (isset($commentData['id']) && !empty($commentData['id'])) {
+                                // Try to find existing comment
+                                $comment = $record->comments()->find($commentData['id']);
+
+                                if ($comment) {
+                                    // Update existing comment
+                                    $comment->update([
+                                        'user_id' => $commentData['user_id'],
+                                        'content' => $commentData['content'],
+                                    ]);
+                                } else {
+                                    // Comment not found, create new one
+                                    $commentDataForCreate = $commentData;
+                                    unset($commentDataForCreate['id']);  // Remove ID for creation
+                                    unset($commentDataForCreate['replies']);  // Remove replies for creation
+
+                                    $comment = $record->comments()->create([
+                                        'user_id' => $commentData['user_id'],
+                                        'content' => $commentData['content'],
+                                    ]);
+                                }
+                            } else {
+                                // Create new comment
+                                $comment = $record->comments()->create([
+                                    'user_id' => $commentData['user_id'],
+                                    'content' => $commentData['content'],
+                                ]);
+                            }
+
+                            // Handle replies if comment was created/updated successfully
+                            if ($comment && isset($commentData['replies']) && is_array($commentData['replies'])) {
+                                // Get existing reply IDs that should be kept
+                                $existingReplyIds = collect($commentData['replies'])
+                                    ->filter(fn($reply) => isset($reply['id']) && !empty($reply['id']))
+                                    ->pluck('id');
+
+                                // Delete replies not in current state
+                                $comment->replies()->whereNotIn('id', $existingReplyIds)->delete();
+
+                                // Create or update replies
+                                foreach ($commentData['replies'] as $replyData) {
+                                    if (isset($replyData['id']) && !empty($replyData['id'])) {
+                                        // Try to update existing reply
+                                        $existingReply = $comment->replies()->find($replyData['id']);
+
+                                        if ($existingReply) {
+                                            $existingReply->update([
+                                                'user_id' => $replyData['user_id'],
+                                                'content' => $replyData['content'],
+                                                'post_id' => $record->id,
+                                            ]);
+                                        } else {
+                                            // Reply not found, create new one
+                                            $comment->replies()->create([
+                                                'user_id' => $replyData['user_id'],
+                                                'content' => $replyData['content'],
+                                                'post_id' => $record->id,
+                                            ]);
+                                        }
+                                    } else {
+                                        // Create new reply
+                                        $comment->replies()->create([
+                                            'user_id' => $replyData['user_id'],
+                                            'content' => $replyData['content'],
+                                            'post_id' => $record->id,
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
                     })
                     ->columnSpanFull()
                     ->defaultItems(0)

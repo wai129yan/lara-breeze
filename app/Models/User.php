@@ -59,4 +59,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class, 'user_id');
     }
+
+    public function publishedPosts(): HasMany
+    {
+        return $this->posts()->where('status', 'published');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class)->whereNotNull('parent_id');
+    }
+
+    /**
+     * Get draft posts by the user
+     */
+    public function draftPosts(): HasMany
+    {
+        return $this->posts()->where('status', 'draft');
+    }
 }
