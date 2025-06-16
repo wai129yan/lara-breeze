@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Posts - BlogSite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 100% 50%;
+            }
+
+            50% {
+                background-position: 0% 100%;
+            }
+
+            75% {
+                background-position: 100% 0%;
+            }
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .filter-sidebar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .search-focus:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .tag-hover {
+            transition: all 0.2s ease;
+        }
+
+        .tag-hover:hover {
+            transform: scale(1.05);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .breadcrumb-arrow::after {
+            content: '>';
+            margin: 0 8px;
+            color: #9CA3AF;
+        }
+
+        .breadcrumb-arrow:last-child::after {
+            display: none;
+        }
+
+        .floating-filters {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 40;
+            transition: all 0.3s ease;
+        }
+
+        .floating-filters.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-50%) translateX(100%);
+        }
+
+        .list-view .post-card {
+            display: flex;
+            flex-direction: row;
+            max-width: none;
+        }
+
+        .list-view .post-card img {
+            width: 200px;
+            height: 150px;
+            flex-shrink: 0;
+        }
+
+        .list-view .post-card .card-content {
+            flex: 1;
+            padding: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .list-view .post-card {
+                flex-direction: column;
+            }
+
+            .list-view .post-card img {
+                width: 100%;
+                height: 200px;
+            }
+
+            .floating-filters {
+                display: none;
+            }
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category-icon {
+            transition: all 0.3s ease;
+        }
+
+        .category-icon:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .infinite-scroll-trigger {
+            height: 100px;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-gray-900">BlogSite</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Authors</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Categories</a>
+                    <a href="#" class="text-purple-600 font-medium">All Posts</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">About</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="searchToggle" class="text-gray-600 hover:text-purple-600 transition-colors md:hidden">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                    <button id="filterToggle" class="text-gray-600 hover:text-purple-600 transition-colors md:hidden">
+                        <i class="fas fa-filter text-xl"></i>
+                    </button>
+                    <button class="md:hidden">
+                        <i class="fas fa-bars text-gray-700"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Search -->
+    <div id="mobileSearch" class="hidden bg-white border-b p-4 md:hidden">
+        <div class="relative">
+            <input type="text" id="mobileSearchInput" placeholder="Search articles..."
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <nav class="flex items-center text-sm">
+                <a href="#" class="breadcrumb-arrow text-gray-500 hover:text-gray-700">Home</a>
+                <span class="text-gray-900 font-medium">All Posts</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="max-w-3xl mx-auto">
+                <div class="mb-6">
+                    <div
+                        class="inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full mb-4">
+                        <i class="fas fa-newspaper text-4xl"></i>
+                    </div>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">All Blog Posts</h1>
+                <p class="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+                    Discover our complete collection of articles, tutorials, and insights from expert developers and
+                    industry leaders.
+                </p>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                    <div class="stats-card rounded-lg p-4">
+                        <div class="text-2xl font-bold mb-1" id="totalPosts">347</div>
+                        <div class="text-sm text-purple-100">Total Posts</div>
+                    </div>
+                    <div class="stats-card rounded-lg p-4">
+                        <div class="text-2xl font-bold mb-1">25</div>
+                        <div class="text-sm text-purple-100">Authors</div>
+                    </div>
+                    <div class="stats-card rounded-lg p-4">
+                        <div class="text-2xl font-bold mb-1">12</div>
+                        <div class="text-sm text-purple-100">Categories</div>
+                    </div>
+                    <div class="stats-card rounded-lg p-4">
+                        <div class="text-2xl font-bold mb-1">2.5M</div>
+                        <div class="text-sm text-purple-100">Total Views</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Sidebar Filters -->
+            <aside class="lg:w-80 space-y-6">
+                <!-- Search -->
+                <div class="filter-sidebar rounded-lg shadow-lg p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Search</h3>
+                    <div class="relative">
+                        <input type="text" id="searchInput" placeholder="Search articles..."
+                            class="search-focus w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="filter-sidebar rounded-lg shadow-lg p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Categories</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="all" checked>
+                            <span class="ml-3 text-gray-700">All Categories</span>
+                            <span class="ml-auto text-sm text-gray-500" id="allCount">347</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="javascript">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fab fa-js-square text-yellow-500 mr-2 category-icon"></i>
+                                JavaScript
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">127</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="react">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fab fa-react text-blue-500 mr-2 category-icon"></i>
+                                React
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">89</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="nodejs">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fab fa-node-js text-green-500 mr-2 category-icon"></i>
+                                Node.js
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">67</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="css">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fab fa-css3-alt text-blue-600 mr-2 category-icon"></i>
+                                CSS
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">78</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="ai">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fas fa-robot text-purple-500 mr-2 category-icon"></i>
+                                AI/ML
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">43</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="category-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="python">
+                            <span class="ml-3 text-gray-700 flex items-center">
+                                <i class="fab fa-python text-blue-400 mr-2 category-icon"></i>
+                                Python
+                            </span>
+                            <span class="ml-auto text-sm text-gray-500">56</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Authors -->
+                <div class="filter-sidebar rounded-lg shadow-lg p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Authors</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="author-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="all" checked>
+                            <span class="ml-3 text-gray-700">All Authors</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="author-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="sarah-johnson">
+                            <div class="ml-3 flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="Sarah Johnson"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-gray-700">Sarah Johnson</span>
+                            </div>
+                            <span class="ml-auto text-sm text-gray-500">45</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="author-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="mike-chen">
+                            <div class="ml-3 flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="Mike Chen"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-gray-700">Mike Chen</span>
+                            </div>
+                            <span class="ml-auto text-sm text-gray-500">38</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="author-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="emily-rodriguez">
+                            <div class="ml-3 flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="Emily Rodriguez"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-gray-700">Emily Rodriguez</span>
+                            </div>
+                            <span class="ml-auto text-sm text-gray-500">32</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="author-filter rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                value="david-kim">
+                            <div class="ml-3 flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="David Kim"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-gray-700">David Kim</span>
+                            </div>
+                            <span class="ml-auto text-sm text-gray-500">29</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Date Range -->
+                <div class="filter-sidebar rounded-lg shadow-lg p-6">
+                    <h3 class="font-semibold text-gray-900 mb-4">Date Range</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="dateRange" class="text-purple-600 focus:ring-purple-500"
+                                value="all" checked>
+                            <span class="ml-3 text-gray-700">All Time</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="dateRange" class="text-purple-600 focus:ring-purple-500"
+                                value="week">
+                            <span class="ml-3 text-gray-700">This Week</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="dateRange" class="text-purple-600 focus:ring-purple-500"
+                                value="month">
+                            <span class="ml-3 text-gray-700">This Month</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer">
+                            <input type="radio" name="dateRange" class="text-purple-600 focus:ring-purple-500"
+                                value="year">
+                            <span class="ml-3 text-gray-700">This Year</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Clear Filters -->
+                <button id="clearFilters"
+                    class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-times mr-2"></i>Clear All Filters
+                </button>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="flex-1">
+                <!-- Controls -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">All Posts</h2>
+                        <p class="text-gray-600 mt-1">
+                            Showing <span id="resultCount">12</span> of <span id="totalCount">347</span> posts
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <!-- Sort -->
+                        <select id="sortSelect"
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="views">Most Viewed</option>
+                            <option value="title">Title A-Z</option>
+                            <option value="author">Author A-Z</option>
+                        </select>
+
+                        <!-- View Toggle -->
+                        <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button id="gridView" class="p-2 text-purple-600 bg-white rounded-md shadow-sm">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button id="listView" class="p-2 text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Skeleton cards -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="skeleton h-48"></div>
+                        <div class="p-6">
+                            <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                            <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                            <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                            <div class="skeleton h-4 w-3/4 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="skeleton h-48"></div>
+                        <div class="p-6">
+                            <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                            <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                            <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                            <div class="skeleton h-4 w-3/4 rounded"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div class="skeleton h-48"></div>
+                        <div class="p-6">
+                            <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                            <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                            <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                            <div class="skeleton h-4 w-3/4 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Posts Grid -->
+                <div id="postsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Post 1 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="JavaScript ES2024: New Features You Should Know" data-author="sarah-johnson"
+                        data-author-name="Sarah Johnson" data-date="2024-12-15" data-views="2300"
+                        data-category="javascript" data-tags="es6,performance,javascript">
+                        <img src="/placeholder.svg?height=200&width=400" alt="JavaScript ES2024"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span
+                                    class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">JavaScript</span>
+                                <span class="text-gray-500 text-sm">Dec 15, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">JavaScript ES2024: New Features You Should Know</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                Explore the latest JavaScript features that will revolutionize how you write code in
+                                2024, including new syntax and performance improvements.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Sarah Johnson"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">Sarah Johnson</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>2.3K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>8 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">ES6+</span>
+                                <span
+                                    class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Performance</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 2 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="React Performance Optimization: Advanced Techniques" data-author="mike-chen"
+                        data-author-name="Mike Chen" data-date="2024-12-12" data-views="1800" data-category="react"
+                        data-tags="react,performance,optimization">
+                        <img src="/placeholder.svg?height=200&width=400" alt="React Performance"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">React</span>
+                                <span class="text-gray-500 text-sm">Dec 12, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">React Performance Optimization: Advanced Techniques</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                Learn advanced React optimization techniques to build lightning-fast applications that
+                                provide exceptional user experiences.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Mike Chen"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">Mike Chen</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>1.8K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>12 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Performance</span>
+                                <span
+                                    class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Optimization</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 3 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="Building AI-Powered Web Applications" data-author="emily-rodriguez"
+                        data-author-name="Emily Rodriguez" data-date="2024-12-10" data-views="3100" data-category="ai"
+                        data-tags="ai,machine-learning,web-development">
+                        <img src="/placeholder.svg?height=200&width=400" alt="AI Development"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">AI/ML</span>
+                                <span class="text-gray-500 text-sm">Dec 10, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">Building AI-Powered Web Applications</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                A comprehensive guide to integrating AI capabilities into your web applications using
+                                modern frameworks and APIs.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Emily Rodriguez"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">Emily Rodriguez</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>3.1K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>15 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">AI</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Machine
+                                    Learning</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 4 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="Node.js Best Practices for 2024" data-author="david-kim"
+                        data-author-name="David Kim" data-date="2024-12-08" data-views="1500" data-category="nodejs"
+                        data-tags="nodejs,backend,best-practices">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Node.js Best Practices"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Node.js</span>
+                                <span class="text-gray-500 text-sm">Dec 8, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">Node.js Best Practices for 2024</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                Essential Node.js practices every developer should follow for building scalable and
+                                maintainable backend applications.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="David Kim"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">David Kim</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>1.5K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>10 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span
+                                    class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Backend</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Best
+                                    Practices</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 5 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="CSS Grid vs Flexbox: When to Use Which" data-author="sarah-johnson"
+                        data-author-name="Sarah Johnson" data-date="2024-12-05" data-views="2700" data-category="css"
+                        data-tags="css,layout,grid,flexbox">
+                        <img src="/placeholder.svg?height=200&width=400" alt="CSS Grid vs Flexbox"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">CSS</span>
+                                <span class="text-gray-500 text-sm">Dec 5, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">CSS Grid vs Flexbox: When to Use Which</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                A comprehensive comparison of CSS Grid and Flexbox, helping you choose the right layout
+                                method for your projects.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Sarah Johnson"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">Sarah Johnson</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>2.7K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>7 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Layout</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Grid</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Post 6 -->
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="Python for Web Development: Django vs Flask" data-author="mike-chen"
+                        data-author-name="Mike Chen" data-date="2024-12-03" data-views="1900" data-category="python"
+                        data-tags="python,django,flask,web-development">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Python Web Development"
+                            class="w-full h-48 object-cover">
+                        <div class="card-content p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Python</span>
+                                <span class="text-gray-500 text-sm">Dec 3, 2024</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">Python for Web Development: Django vs Flask</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                Compare Django and Flask frameworks to help you choose the best Python web framework for
+                                your next project.
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Mike Chen"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <span class="text-sm text-gray-700">Mike Chen</span>
+                                </div>
+                                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                                    <span class="flex items-center">
+                                        <i class="far fa-eye mr-1"></i>1.9K
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="far fa-clock mr-1"></i>11 min
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Django</span>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Flask</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <!-- No Results -->
+                <div id="noResults" class="hidden text-center py-16">
+                    <div class="max-w-md mx-auto">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">No posts found</h3>
+                        <p class="text-gray-600 mb-6">Try adjusting your search criteria or browse all posts.</p>
+                        <button id="clearFiltersFromNoResults"
+                            class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                            Clear All Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Load More / Infinite Scroll Trigger -->
+                <div class="infinite-scroll-trigger" id="infiniteScrollTrigger"></div>
+
+                <!-- Load More Button -->
+                <div class="text-center mt-12">
+                    <button id="loadMoreBtn"
+                        class="bg-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        <span class="load-text">Load More Posts</span>
+                        <span class="loading-text hidden">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>Loading...
+                        </span>
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Floating Quick Filters (Desktop) -->
+    <div class="floating-filters hidden lg:block">
+        <div class="filter-sidebar rounded-lg shadow-lg p-4 w-64">
+            <h3 class="font-semibold text-gray-900 mb-3 text-sm">Quick Filters</h3>
+            <div class="space-y-2">
+                <button
+                    class="quick-filter w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    data-filter="popular">
+                    <i class="fas fa-fire mr-2 text-orange-500"></i>Popular This Week
+                </button>
+                <button
+                    class="quick-filter w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    data-filter="recent">
+                    <i class="fas fa-clock mr-2 text-blue-500"></i>Recently Published
+                </button>
+                <button
+                    class="quick-filter w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    data-filter="trending">
+                    <i class="fas fa-trending-up mr-2 text-green-500"></i>Trending Now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Filter Modal -->
+    <div id="mobileFilterModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="fixed inset-y-0 right-0 w-80 bg-white shadow-xl transform translate-x-full transition-transform duration-300"
+            id="mobileFilterPanel">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h2 class="text-lg font-semibold">Filters</h2>
+                <button id="closeMobileFilter" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto h-full pb-20">
+                <!-- Mobile filter content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
+                Get the latest articles, tutorials, and insights delivered to your inbox weekly.
+            </p>
+            <form class="max-w-md mx-auto flex gap-4">
+                <input type="email" placeholder="Enter your email"
+                    class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button type="submit"
+                    class="bg-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-12 border-t">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">BlogSite</h3>
+                    <p class="text-gray-600 mb-4">
+                        Your go-to resource for the latest in web development, programming tutorials, and tech insights.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Categories</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">JavaScript</a>
+                        </li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">React</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Node.js</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">CSS</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Authors</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t mt-8 pt-8 text-center text-gray-600">
+                <p>&copy; 2024 BlogSite. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let allPosts = [];
+        let filteredPosts = [];
+        let currentView = 'grid';
+        let currentPage = 1;
+        let postsPerPage = 12;
+        let isLoading = false;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            loadPosts();
+            setupEventListeners();
+            setupInfiniteScroll();
+        });
+
+        function loadPosts() {
+            // Get all post cards and store their data
+            const postCards = document.querySelectorAll('.post-card');
+            allPosts = Array.from(postCards).map(card => ({
+                element: card,
+                title: card.dataset.title.toLowerCase(),
+                author: card.dataset.author,
+                authorName: card.dataset.authorName.toLowerCase(),
+                date: new Date(card.dataset.date),
+                views: parseInt(card.dataset.views),
+                category: card.dataset.category,
+                tags: card.dataset.tags.split(',')
+            }));
+
+            // Create more posts for demonstration
+            for (let i = 0; i < 50; i++) {
+                const randomPost = allPosts[Math.floor(Math.random() * allPosts.length)];
+                const clonedPost = { ...randomPost };
+                clonedPost.element = randomPost.element.cloneNode(true);
+                clonedPost.date = new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28));
+                allPosts.push(clonedPost);
+            }
+
+            filteredPosts = [...allPosts];
+            updateResultsCount();
+            renderPosts();
+        }
+
+        function setupEventListeners() {
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+
+            searchInput.addEventListener('input', debounce(handleSearch, 300));
+            mobileSearchInput.addEventListener('input', debounce(handleSearch, 300));
+
+            // Sort functionality
+            const sortSelect = document.getElementById('sortSelect');
+            sortSelect.addEventListener('change', handleSort);
+
+            // Category filters
+            const categoryFilters = document.querySelectorAll('.category-filter');
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('change', handleCategoryFilter);
+            });
+
+            // Author filters
+            const authorFilters = document.querySelectorAll('.author-filter');
+            authorFilters.forEach(filter => {
+                filter.addEventListener('change', handleAuthorFilter);
+            });
+
+            // Date range filters
+            const dateRangeFilters = document.querySelectorAll('input[name="dateRange"]');
+            dateRangeFilters.forEach(filter => {
+                filter.addEventListener('change', handleDateRangeFilter);
+            });
+
+            // View toggle
+            const gridViewBtn = document.getElementById('gridView');
+            const listViewBtn = document.getElementById('listView');
+            gridViewBtn.addEventListener('click', () => toggleView('grid'));
+            listViewBtn.addEventListener('click', () => toggleView('list'));
+
+            // Clear filters
+            const clearFiltersBtn = document.getElementById('clearFilters');
+            const clearFiltersFromNoResults = document.getElementById('clearFiltersFromNoResults');
+            clearFiltersBtn.addEventListener('click', clearAllFilters);
+            clearFiltersFromNoResults.addEventListener('click', clearAllFilters);
+
+            // Load more
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            loadMoreBtn.addEventListener('click', loadMorePosts);
+
+            // Mobile toggles
+            const searchToggle = document.getElementById('searchToggle');
+            const filterToggle = document.getElementById('filterToggle');
+            const mobileSearch = document.getElementById('mobileSearch');
+            const mobileFilterModal = document.getElementById('mobileFilterModal');
+            const closeMobileFilter = document.getElementById('closeMobileFilter');
+
+            searchToggle.addEventListener('click', () => {
+                mobileSearch.classList.toggle('hidden');
+            });
+
+            filterToggle.addEventListener('click', () => {
+                mobileFilterModal.classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('mobileFilterPanel').classList.remove('translate-x-full');
+                }, 10);
+            });
+
+            closeMobileFilter.addEventListener('click', () => {
+                document.getElementById('mobileFilterPanel').classList.add('translate-x-full');
+                setTimeout(() => {
+                    mobileFilterModal.classList.add('hidden');
+                }, 300);
+            });
+
+            // Quick filters
+            const quickFilters = document.querySelectorAll('.quick-filter');
+            quickFilters.forEach(filter => {
+                filter.addEventListener('click', handleQuickFilter);
+            });
+
+            // Show/hide floating elements on scroll
+            window.addEventListener('scroll', toggleFloatingElements);
+        }
+
+        function handleSearch(event) {
+            const searchTerm = event.target.value.toLowerCase();
+            showLoading();
+
+            setTimeout(() => {
+                filteredPosts = allPosts.filter(post =>
+                    post.title.includes(searchTerm) ||
+                    post.authorName.includes(searchTerm) ||
+                    post.tags.some(tag => tag.includes(searchTerm))
+                );
+                applyAllFilters();
+                hideLoading();
+            }, 500);
+        }
+
+        function handleSort(event) {
+            const sortBy = event.target.value;
+            showLoading();
+
+            setTimeout(() => {
+                switch (sortBy) {
+                    case 'newest':
+                        filteredPosts.sort((a, b) => b.date - a.date);
+                        break;
+                    case 'oldest':
+                        filteredPosts.sort((a, b) => a.date - b.date);
+                        break;
+                    case 'popular':
+                    case 'views':
+                        filteredPosts.sort((a, b) => b.views - a.views);
+                        break;
+                    case 'title':
+                        filteredPosts.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                    case 'author':
+                        filteredPosts.sort((a, b) => a.authorName.localeCompare(b.authorName));
+                        break;
+                }
+                currentPage = 1;
+                renderPosts();
+                hideLoading();
+            }, 300);
+        }
+
+        function handleCategoryFilter() {
+            const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked'))
+                .map(cb => cb.value);
+
+            showLoading();
+            setTimeout(() => {
+                if (selectedCategories.includes('all') || selectedCategories.length === 0) {
+                    applyAllFilters();
+                } else {
+                    filteredPosts = allPosts.filter(post =>
+                        selectedCategories.includes(post.category)
+                    );
+                    applyAllFilters();
+                }
+                hideLoading();
+            }, 300);
+        }
+
+        function handleAuthorFilter() {
+            const selectedAuthors = Array.from(document.querySelectorAll('.author-filter:checked'))
+                .map(cb => cb.value);
+
+            showLoading();
+            setTimeout(() => {
+                if (selectedAuthors.includes('all') || selectedAuthors.length === 0) {
+                    applyAllFilters();
+                } else {
+                    filteredPosts = allPosts.filter(post =>
+                        selectedAuthors.includes(post.author)
+                    );
+                    applyAllFilters();
+                }
+                hideLoading();
+            }, 300);
+        }
+
+        function handleDateRangeFilter(event) {
+            const dateRange = event.target.value;
+            const now = new Date();
+            let startDate;
+
+            switch (dateRange) {
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                default:
+                    startDate = null;
+            }
+
+            showLoading();
+            setTimeout(() => {
+                if (startDate) {
+                    filteredPosts = allPosts.filter(post => post.date >= startDate);
+                } else {
+                    filteredPosts = [...allPosts];
+                }
+                applyAllFilters();
+                hideLoading();
+            }, 300);
+        }
+
+        function handleQuickFilter(event) {
+            const filterType = event.target.dataset.filter;
+            showLoading();
+
+            setTimeout(() => {
+                switch (filterType) {
+                    case 'popular':
+                        filteredPosts = allPosts.filter(post => post.views > 2000);
+                        break;
+                    case 'recent':
+                        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+                        filteredPosts = allPosts.filter(post => post.date >= weekAgo);
+                        break;
+                    case 'trending':
+                        filteredPosts = allPosts.filter(post => post.views > 1500);
+                        break;
+                }
+                currentPage = 1;
+                renderPosts();
+                hideLoading();
+            }, 300);
+        }
+
+        function applyAllFilters() {
+            // This function would combine all active filters
+            // For now, it just renders the current filteredPosts
+            currentPage = 1;
+            renderPosts();
+        }
+
+        function renderPosts() {
+            const grid = document.getElementById('postsGrid');
+            const noResults = document.getElementById('noResults');
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+            // Clear grid
+            grid.innerHTML = '';
+
+            if (filteredPosts.length === 0) {
+                noResults.classList.remove('hidden');
+                loadMoreBtn.style.display = 'none';
+                updateResultsCount();
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
+            // Calculate posts to show
+            const startIndex = 0;
+            const endIndex = currentPage * postsPerPage;
+            const postsToShow = filteredPosts.slice(startIndex, endIndex);
+
+            // Render posts
+            postsToShow.forEach((post, index) => {
+                const postElement = post.element.cloneNode(true);
+                postElement.style.animationDelay = `${(index % postsPerPage) * 0.1}s`;
+                grid.appendChild(postElement);
+            });
+
+            // Show/hide load more button
+            if (endIndex >= filteredPosts.length) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'block';
+            }
+
+            updateResultsCount();
+        }
+
+        function loadMorePosts() {
+            if (isLoading) return;
+
+            isLoading = true;
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            const loadText = loadMoreBtn.querySelector('.load-text');
+            const loadingText = loadMoreBtn.querySelector('.loading-text');
+
+            loadText.classList.add('hidden');
+            loadingText.classList.remove('hidden');
+
+            setTimeout(() => {
+                currentPage++;
+                renderPosts();
+
+                loadText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
+                isLoading = false;
+            }, 1000);
+        }
+
+        function toggleView(view) {
+            const gridBtn = document.getElementById('gridView');
+            const listBtn = document.getElementById('listView');
+            const grid = document.getElementById('postsGrid');
+
+            currentView = view;
+
+            if (view === 'grid') {
+                gridBtn.classList.add('text-purple-600', 'bg-white', 'shadow-sm');
+                gridBtn.classList.remove('text-gray-400');
+                listBtn.classList.add('text-gray-400');
+                listBtn.classList.remove('text-purple-600', 'bg-white', 'shadow-sm');
+
+                grid.classList.remove('list-view');
+                grid.classList.add('grid', 'md:grid-cols-2', 'lg:grid-cols-3');
+            } else {
+                listBtn.classList.add('text-purple-600', 'bg-white', 'shadow-sm');
+                listBtn.classList.remove('text-gray-400');
+                gridBtn.classList.add('text-gray-400');
+                gridBtn.classList.remove('text-purple-600', 'bg-white', 'shadow-sm');
+
+                grid.classList.add('list-view');
+                grid.classList.remove('md:grid-cols-2', 'lg:grid-cols-3');
+            }
+        }
+
+        function clearAllFilters() {
+            // Reset search
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+
+            // Reset sort
+            document.getElementById('sortSelect').value = 'newest';
+
+            // Reset category filters
+            document.querySelectorAll('.category-filter').forEach(cb => {
+                cb.checked = cb.value === 'all';
+            });
+
+            // Reset author filters
+            document.querySelectorAll('.author-filter').forEach(cb => {
+                cb.checked = cb.value === 'all';
+            });
+
+            // Reset date range
+            document.querySelector('input[name="dateRange"][value="all"]').checked = true;
+
+            // Reset posts
+            filteredPosts = [...allPosts];
+            currentPage = 1;
+            renderPosts();
+        }
+
+        function updateResultsCount() {
+            const showing = Math.min(currentPage * postsPerPage, filteredPosts.length);
+            document.getElementById('resultCount').textContent = showing;
+            document.getElementById('totalCount').textContent = filteredPosts.length;
+            document.getElementById('totalPosts').textContent = allPosts.length;
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('postsGrid').style.opacity = '0.5';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('postsGrid').style.opacity = '1';
+        }
+
+        function toggleFloatingElements() {
+            const floatingFilters = document.querySelector('.floating-filters');
+            const scrollY = window.pageYOffset;
+
+            if (scrollY > 500) {
+                floatingFilters.classList.remove('hidden');
+            } else {
+                floatingFilters.classList.add('hidden');
+            }
+        }
+
+        function setupInfiniteScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !isLoading) {
+                        loadMorePosts();
+                    }
+                });
+            }, {
+                rootMargin: '100px'
+            });
+
+            const trigger = document.getElementById('infiniteScrollTrigger');
+            if (trigger) {
+                observer.observe(trigger);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initialize floating elements state
+        toggleFloatingElements();
+    </script>
+</body>
+
+</html>

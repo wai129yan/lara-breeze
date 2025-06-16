@@ -233,6 +233,7 @@
         </section>
 
         <!-- Latest Posts -->
+        <h1>{{ hello() }}</h1>
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Latest Articles</h2>
@@ -249,11 +250,12 @@
                         </a>
                         <div class="p-6">
                             <a href="#"
-                                class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Technology</a>
+                                class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">{{ $post->category->name }}</a>
                             <h3 class="text-xl font-bold mb-2">
-                                <a href="#" class="hover:text-primary transition">{{ $post->title }}</a>
+                                <a href="#"
+                                    class="hover:text-primary transition">{{ generateExcerpt($post->title, 20) }}</a>
                             </h3>
-                            <p class="text-gray-600 mb-4">{{ generateExcerpt($post->content) }}</p>
+                            <p class="text-gray-600 mb-4">{{ generateExcerpt($post->content, 50) }}</p>
                             <div class="flex items-center">
                                 <a href="{{ route('users.show', $post->user->id) }}"><img
                                         src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author"
@@ -264,7 +266,8 @@
                                             {{ $post->user->name }}
                                         </a>
                                     </p>
-                                    <p class="text-xs text-gray-500">May 10, 2023 · 5 min read</p>
+                                    <p class="text-xs text-gray-500">{{ timeToRead($post->content, 10) }}</p>
+                                    <p class="text-xs text-gray-500">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                         </div>

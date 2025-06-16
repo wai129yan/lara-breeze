@@ -60,6 +60,11 @@ class Post extends Model
         return $this->hasMany(Comment::class)->whereNotNull('parent_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
     // public function comments(): HasMany
     // {
     //     return $this->hasMany(Comment::class)->whereNull('parent_id');  // Only top-level comments

@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BlogSite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 100% 50%;
+            }
+
+            50% {
+                background-position: 0% 100%;
+            }
+
+            75% {
+                background-position: 100% 0%;
+            }
+        }
+
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .team-card:hover .team-overlay {
+            opacity: 1;
+        }
+
+        .team-overlay {
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .stats-counter {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            transform: translateX(-50%);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 2rem;
+            width: 16px;
+            height: 16px;
+            background: #667eea;
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .value-icon {
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover .value-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .breadcrumb-arrow::after {
+            content: '>';
+            margin: 0 8px;
+            color: #9CA3AF;
+        }
+
+        .breadcrumb-arrow:last-child::after {
+            display: none;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+        }
+
+        .testimonial-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px) scale(1.1);
+        }
+
+        .milestone-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .milestone-card:nth-child(2) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .milestone-card:nth-child(3) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .milestone-card:nth-child(4) {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .timeline-item::before {
+                left: 2rem;
+            }
+
+            .timeline-dot {
+                left: 2rem;
+            }
+
+            .stats-counter {
+                font-size: 2rem;
+            }
+        }
+
+        .intersection-observer {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .intersection-observer.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-gray-900">BlogSite</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Authors</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Categories</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">All Posts</a>
+                    <a href="#" class="text-purple-600 font-medium">About</a>
+                </div>
+                <button class="md:hidden">
+                    <i class="fas fa-bars text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <nav class="flex items-center text-sm">
+                <a href="#" class="breadcrumb-arrow text-gray-500 hover:text-gray-700">Home</a>
+                <span class="text-gray-900 font-medium">About</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 relative overflow-hidden">
+        <div class="floating-shapes">
+            <div class="shape w-20 h-20 bg-white rounded-full"></div>
+            <div class="shape w-16 h-16 bg-white rounded-lg transform rotate-45"></div>
+            <div class="shape w-12 h-12 bg-white rounded-full"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 fade-in">
+                    We're Building the Future of
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">
+                        Developer Education
+                    </span>
+                </h1>
+                <p class="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl mx-auto fade-in-up">
+                    BlogSite is more than just a blog—we're a community of passionate developers,
+                    designers, and tech enthusiasts sharing knowledge to empower the next generation of creators.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center fade-in-up">
+                    <a href="#team"
+                        class="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                        Meet Our Team
+                    </a>
+                    <a href="#mission"
+                        class="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+                        Our Mission
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="intersection-observer">
+                    <div class="stats-counter" data-target="347">0</div>
+                    <p class="text-gray-600 font-medium">Articles Published</p>
+                </div>
+                <div class="intersection-observer">
+                    <div class="stats-counter" data-target="25">0</div>
+                    <p class="text-gray-600 font-medium">Expert Authors</p>
+                </div>
+                <div class="intersection-observer">
+                    <div class="stats-counter" data-target="150000">0</div>
+                    <p class="text-gray-600 font-medium">Monthly Readers</p>
+                </div>
+                <div class="intersection-observer">
+                    <div class="stats-counter" data-target="12">0</div>
+                    <p class="text-gray-600 font-medium">Tech Categories</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section id="mission" class="py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="intersection-observer">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+                    <p class="text-lg text-gray-700 mb-6">
+                        We believe that knowledge should be accessible to everyone. Our mission is to democratize
+                        tech education by providing high-quality, practical content that helps developers at every
+                        stage of their journey.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-8">
+                        From beginners taking their first steps in coding to seasoned professionals exploring
+                        cutting-edge technologies, we're here to guide, inspire, and empower the global developer
+                        community.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-purple-600 rounded-full mr-4"></div>
+                            <span class="text-gray-700">Practical, hands-on tutorials and guides</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-purple-600 rounded-full mr-4"></div>
+                            <span class="text-gray-700">Industry insights from experienced professionals</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-purple-600 rounded-full mr-4"></div>
+                            <span class="text-gray-700">Community-driven content and discussions</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-purple-600 rounded-full mr-4"></div>
+                            <span class="text-gray-700">Free and accessible to developers worldwide</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="intersection-observer">
+                    <img src="/placeholder.svg?height=500&width=600" alt="Our Mission" class="rounded-lg shadow-2xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 intersection-observer">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Core Values</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    These principles guide everything we do and shape the content we create for our community.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Value 1 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-lightbulb text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Innovation</h3>
+                    <p class="text-gray-600">
+                        We stay at the forefront of technology, exploring emerging trends and sharing cutting-edge
+                        insights
+                        with our community.
+                    </p>
+                </div>
+
+                <!-- Value 2 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-green-50 to-teal-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Community</h3>
+                    <p class="text-gray-600">
+                        We foster an inclusive environment where developers can learn, share, and grow together
+                        regardless of their background or experience level.
+                    </p>
+                </div>
+
+                <!-- Value 3 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-yellow-50 to-orange-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-star text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Quality</h3>
+                    <p class="text-gray-600">
+                        Every piece of content is carefully crafted, thoroughly tested, and reviewed by experts
+                        to ensure accuracy and practical value.
+                    </p>
+                </div>
+
+                <!-- Value 4 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-pink-50 to-red-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-heart text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Passion</h3>
+                    <p class="text-gray-600">
+                        We're genuinely passionate about technology and education, and this enthusiasm shines
+                        through in everything we create.
+                    </p>
+                </div>
+
+                <!-- Value 5 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-indigo-50 to-purple-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-globe text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Accessibility</h3>
+                    <p class="text-gray-600">
+                        We believe knowledge should be free and accessible to everyone, breaking down barriers
+                        to tech education worldwide.
+                    </p>
+                </div>
+
+                <!-- Value 6 -->
+                <div
+                    class="value-card card-hover bg-gradient-to-br from-teal-50 to-cyan-50 p-8 rounded-xl text-center intersection-observer">
+                    <div
+                        class="value-icon w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-rocket text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Growth</h3>
+                    <p class="text-gray-600">
+                        We're committed to continuous learning and improvement, both for ourselves and our
+                        community members.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 intersection-observer">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
+                <p class="text-xl text-gray-600">
+                    From a simple idea to a thriving community of developers
+                </p>
+            </div>
+
+            <div class="space-y-12">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item intersection-observer">
+                    <div class="timeline-dot"></div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">2020 - The Beginning</h3>
+                            <p class="text-gray-600 mb-4">
+                                BlogSite was founded by a group of passionate developers who wanted to share their
+                                knowledge and help others learn. We started with just 5 articles and a dream.
+                            </p>
+                            <div class="milestone-card p-4 rounded-lg inline-block">
+                                <div class="text-2xl font-bold">5</div>
+                                <div class="text-sm">First Articles</div>
+                            </div>
+                        </div>
+                        <div>
+                            <img src="/placeholder.svg?height=300&width=400" alt="2020 Beginning"
+                                class="rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item intersection-observer">
+                    <div class="timeline-dot"></div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="md:order-2">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">2021 - Growing Community</h3>
+                            <p class="text-gray-600 mb-4">
+                                Our community began to grow as more developers discovered our content. We expanded
+                                our team and started covering more diverse topics in web development.
+                            </p>
+                            <div class="milestone-card p-4 rounded-lg inline-block">
+                                <div class="text-2xl font-bold">10K</div>
+                                <div class="text-sm">Monthly Readers</div>
+                            </div>
+                        </div>
+                        <div class="md:order-1">
+                            <img src="/placeholder.svg?height=300&width=400" alt="2021 Growth"
+                                class="rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item intersection-observer">
+                    <div class="timeline-dot"></div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">2022 - Expert Authors</h3>
+                            <p class="text-gray-600 mb-4">
+                                We welcomed industry experts and thought leaders to our platform, bringing
+                                professional insights and advanced tutorials to our growing audience.
+                            </p>
+                            <div class="milestone-card p-4 rounded-lg inline-block">
+                                <div class="text-2xl font-bold">15</div>
+                                <div class="text-sm">Expert Authors</div>
+                            </div>
+                        </div>
+                        <div>
+                            <img src="/placeholder.svg?height=300&width=400" alt="2022 Experts"
+                                class="rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item intersection-observer">
+                    <div class="timeline-dot"></div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="md:order-2">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">2023 - Global Reach</h3>
+                            <p class="text-gray-600 mb-4">
+                                BlogSite reached developers worldwide, with readers from over 100 countries.
+                                We launched our mobile app and introduced interactive coding examples.
+                            </p>
+                            <div class="milestone-card p-4 rounded-lg inline-block">
+                                <div class="text-2xl font-bold">100K</div>
+                                <div class="text-sm">Global Readers</div>
+                            </div>
+                        </div>
+                        <div class="md:order-1">
+                            <img src="/placeholder.svg?height=300&width=400" alt="2023 Global"
+                                class="rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 5 -->
+                <div class="timeline-item intersection-observer">
+                    <div class="timeline-dot"></div>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="md:text-right">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">2024 - Innovation Hub</h3>
+                            <p class="text-gray-600 mb-4">
+                                Today, BlogSite is recognized as a leading platform for developer education,
+                                featuring AI-powered content recommendations and interactive learning paths.
+                            </p>
+                            <div class="milestone-card p-4 rounded-lg inline-block">
+                                <div class="text-2xl font-bold">150K</div>
+                                <div class="text-sm">Monthly Readers</div>
+                            </div>
+                        </div>
+                        <div>
+                            <img src="/placeholder.svg?height=300&width=400" alt="2024 Innovation"
+                                class="rounded-lg shadow-lg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 intersection-observer">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    The passionate individuals behind BlogSite who work tirelessly to bring you the best content
+                    and learning experiences.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Team Member 1 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="Sarah Johnson"
+                        class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-purple-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-github text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Sarah Johnson</h3>
+                        <p class="text-purple-600 font-medium mb-3">Founder & CEO</p>
+                        <p class="text-gray-600 text-sm">
+                            Full-stack developer with 10+ years of experience. Passionate about making
+                            programming education accessible to everyone.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">JavaScript</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">React</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Node.js</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="Mike Chen" class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-blue-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-github text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Mike Chen</h3>
+                        <p class="text-blue-600 font-medium mb-3">CTO & Lead Developer</p>
+                        <p class="text-gray-600 text-sm">
+                            Backend specialist and cloud architecture expert. Loves building scalable
+                            systems and mentoring junior developers.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Python</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">AWS</span>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Docker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="Emily Rodriguez"
+                        class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-green-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-dribbble text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Emily Rodriguez</h3>
+                        <p class="text-green-600 font-medium mb-3">Head of Design</p>
+                        <p class="text-gray-600 text-sm">
+                            UX/UI designer with a passion for creating intuitive and beautiful user
+                            experiences. Advocates for accessible design.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">UI/UX</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Figma</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">CSS</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 4 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="David Kim" class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-red-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-medium text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">David Kim</h3>
+                        <p class="text-red-600 font-medium mb-3">Content Director</p>
+                        <p class="text-gray-600 text-sm">
+                            Technical writer and educator with expertise in making complex topics
+                            accessible. Former software engineer turned content creator.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Technical
+                                Writing</span>
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">Education</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 5 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="Lisa Wang" class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-yellow-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-purple-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-purple-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-purple-300">
+                                    <i class="fab fa-instagram text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Lisa Wang</h3>
+                        <p class="text-yellow-600 font-medium mb-3">Community Manager</p>
+                        <p class="text-gray-600 text-sm">
+                            Community builder and developer advocate. Passionate about fostering
+                            inclusive tech communities and supporting new developers.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Community</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">DevRel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Member 6 -->
+                <div
+                    class="team-card card-hover bg-white rounded-xl shadow-lg overflow-hidden relative intersection-observer">
+                    <img src="/placeholder.svg?height=300&width=300" alt="Alex Thompson"
+                        class="w-full h-64 object-cover">
+                    <div
+                        class="team-overlay absolute inset-0 bg-gradient-to-t from-indigo-600 to-transparent flex items-end">
+                        <div class="p-6 text-white">
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-twitter text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-linkedin text-xl"></i>
+                                </a>
+                                <a href="#" class="social-icon text-white hover:text-yellow-300">
+                                    <i class="fab fa-youtube text-xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Alex Thompson</h3>
+                        <p class="text-indigo-600 font-medium mb-3">Video Producer</p>
+                        <p class="text-gray-600 text-sm">
+                            Video content creator and educator. Specializes in creating engaging
+                            coding tutorials and tech explainer videos.
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">Video
+                                Production</span>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full">Education</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-20 gradient-bg text-white relative overflow-hidden">
+        <div class="floating-shapes">
+            <div class="shape w-24 h-24 bg-white rounded-full"></div>
+            <div class="shape w-16 h-16 bg-white rounded-lg transform rotate-45"></div>
+            <div class="shape w-20 h-20 bg-white rounded-full"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 intersection-observer">
+                <h2 class="text-4xl font-bold mb-4">What Our Community Says</h2>
+                <p class="text-xl text-purple-100 max-w-3xl mx-auto">
+                    Hear from developers around the world who have benefited from our content and community.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Testimonial 1 -->
+                <div class="testimonial-card p-6 rounded-xl intersection-observer">
+                    <div class="flex items-center mb-4">
+                        <img src="/placeholder.svg?height=48&width=48" alt="John Doe"
+                            class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold text-white">John Doe</h4>
+                            <p class="text-purple-200 text-sm">Frontend Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-purple-100 mb-4">
+                        "BlogSite has been instrumental in my journey from junior to senior developer.
+                        The quality of content and practical examples are unmatched."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 2 -->
+                <div class="testimonial-card p-6 rounded-xl intersection-observer">
+                    <div class="flex items-center mb-4">
+                        <img src="/placeholder.svg?height=48&width=48" alt="Maria Garcia"
+                            class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold text-white">Maria Garcia</h4>
+                            <p class="text-purple-200 text-sm">Full Stack Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-purple-100 mb-4">
+                        "The tutorials are so well-explained and easy to follow. I've learned more here
+                        than in any other platform. Highly recommended!"
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+
+                <!-- Testimonial 3 -->
+                <div class="testimonial-card p-6 rounded-xl intersection-observer">
+                    <div class="flex items-center mb-4">
+                        <img src="/placeholder.svg?height=48&width=48" alt="Ahmed Hassan"
+                            class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-semibold text-white">Ahmed Hassan</h4>
+                            <p class="text-purple-200 text-sm">Backend Engineer</p>
+                        </div>
+                    </div>
+                    <p class="text-purple-100 mb-4">
+                        "As someone transitioning into tech, BlogSite provided the perfect learning path.
+                        The community is supportive and the content is top-notch."
+                    </p>
+                    <div class="flex text-yellow-400">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center intersection-observer">
+            <h2 class="text-4xl font-bold text-gray-900 mb-6">Join Our Community</h2>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Ready to level up your development skills? Join thousands of developers who trust
+                BlogSite for their learning journey.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#"
+                    class="bg-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    Start Reading
+                </a>
+                <a href="#"
+                    class="border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-purple-600 hover:text-white transition-colors">
+                    Subscribe to Newsletter
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
+                Get the latest articles, tutorials, and insights delivered to your inbox weekly.
+            </p>
+            <form class="max-w-md mx-auto flex gap-4">
+                <input type="email" placeholder="Enter your email"
+                    class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button type="submit"
+                    class="bg-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-12 border-t">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">BlogSite</h3>
+                    <p class="text-gray-600 mb-4">
+                        Empowering developers worldwide with high-quality tutorials, insights, and community support.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Careers</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">All Posts</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Categories</a>
+                        </li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Authors</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Newsletter</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t mt-8 pt-8 text-center text-gray-600">
+                <p>&copy; 2024 BlogSite. All rights reserved. Made with ❤️ for the developer community.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with intersection-observer class
+        document.querySelectorAll('.intersection-observer').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animated counters
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+
+            function updateCounter() {
+                start += increment;
+                if (start < target) {
+                    element.textContent = Math.floor(start).toLocaleString();
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target.toLocaleString();
+                }
+            }
+
+            updateCounter();
+        }
+
+        // Start counters when they come into view
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    const target = parseInt(counter.dataset.target);
+                    animateCounter(counter, target);
+                    counterObserver.unobserve(counter);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stats-counter').forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.floating-shapes');
+
+            parallaxElements.forEach(element => {
+                const speed = 0.5;
+                element.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Team card hover effects
+        document.querySelectorAll('.team-card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-12px) scale(1.02)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Newsletter form submission
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            if (email) {
+                // Show success message
+                const button = this.querySelector('button');
+                const originalText = button.textContent;
+                button.textContent = 'Subscribed!';
+                button.classList.add('bg-green-600');
+                button.classList.remove('bg-purple-600');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('bg-green-600');
+                    button.classList.add('bg-purple-600');
+                    this.reset();
+                }, 2000);
+            }
+        });
+
+        // Add loading animation to page
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+
+        // Mobile menu toggle (if needed)
+        const mobileMenuButton = document.querySelector('.md\\:hidden button');
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', function () {
+                // Add mobile menu functionality here
+                console.log('Mobile menu clicked');
+            });
+        }
+
+        // Add some interactive elements
+        document.querySelectorAll('.value-card').forEach(card => {
+            card.addEventListener('click', function () {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+        });
+
+        // Social media link tracking
+        document.querySelectorAll('.social-icon').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const platform = this.querySelector('i').classList[1].split('-')[1];
+                console.log(`Social link clicked: ${platform}`);
+                // Add analytics tracking here
+            });
+        });
+    </script>
+</body>
+
+</html>

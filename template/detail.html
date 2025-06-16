@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript ES2024: New Features You Should Know - BlogSite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <style>
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        .floating-toc {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            max-height: 60vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .floating-toc.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-50%) translateX(100%);
+        }
+
+        .toc-link {
+            transition: all 0.2s ease;
+        }
+
+        .toc-link.active {
+            background: #f3f4f6;
+            border-left: 3px solid #667eea;
+        }
+
+        .social-share {
+            position: fixed;
+            left: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .social-share.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-50%) translateX(-100%);
+        }
+
+        .highlight-selection {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .code-block {
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .code-block:hover .copy-button {
+            opacity: 1;
+        }
+
+        .article-content h2,
+        .article-content h3,
+        .article-content h4 {
+            scroll-margin-top: 100px;
+        }
+
+        .zoom-image {
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+
+        .zoom-image:hover {
+            transform: scale(1.02);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .breadcrumb-arrow::after {
+            content: '>';
+            margin: 0 8px;
+            color: #9CA3AF;
+        }
+
+        .breadcrumb-arrow:last-child::after {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+
+            .floating-toc,
+            .social-share {
+                display: none;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress"></div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="#" class="text-2xl font-bold text-gray-900">BlogSite</a>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Home</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Authors</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Categories</a>
+                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">About</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="bookmarkBtn" class="text-gray-600 hover:text-purple-600 transition-colors">
+                        <i class="far fa-bookmark text-xl"></i>
+                    </button>
+                    <button id="shareBtn" class="text-gray-600 hover:text-purple-600 transition-colors">
+                        <i class="fas fa-share-alt text-xl"></i>
+                    </button>
+                    <button class="md:hidden">
+                        <i class="fas fa-bars text-gray-700"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white border-b">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <nav class="flex items-center text-sm">
+                <a href="#" class="breadcrumb-arrow text-gray-500 hover:text-gray-700">Home</a>
+                <a href="#" class="breadcrumb-arrow text-gray-500 hover:text-gray-700">JavaScript</a>
+                <span class="text-gray-900 font-medium">ES2024 Features</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Floating Table of Contents -->
+    <div class="floating-toc hidden lg:block rounded-lg shadow-lg p-4 w-64">
+        <h3 class="font-semibold text-gray-900 mb-3 text-sm uppercase tracking-wide">Table of Contents</h3>
+        <nav class="space-y-1">
+            <a href="#introduction"
+                class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">Introduction</a>
+            <a href="#new-syntax" class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">New
+                Syntax Features</a>
+            <a href="#performance"
+                class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">Performance
+                Improvements</a>
+            <a href="#examples" class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">Code
+                Examples</a>
+            <a href="#browser-support"
+                class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">Browser Support</a>
+            <a href="#conclusion"
+                class="toc-link block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 rounded">Conclusion</a>
+        </nav>
+    </div>
+
+    <!-- Social Share Buttons -->
+    <div class="social-share hidden lg:flex flex-col rounded-lg shadow-lg p-3 space-y-3">
+        <button class="social-btn text-blue-600 hover:bg-blue-50 p-2 rounded transition-colors" data-platform="twitter">
+            <i class="fab fa-twitter text-xl"></i>
+        </button>
+        <button class="social-btn text-blue-800 hover:bg-blue-50 p-2 rounded transition-colors"
+            data-platform="facebook">
+            <i class="fab fa-facebook text-xl"></i>
+        </button>
+        <button class="social-btn text-blue-700 hover:bg-blue-50 p-2 rounded transition-colors"
+            data-platform="linkedin">
+            <i class="fab fa-linkedin text-xl"></i>
+        </button>
+        <button class="social-btn text-green-600 hover:bg-green-50 p-2 rounded transition-colors"
+            data-platform="whatsapp">
+            <i class="fab fa-whatsapp text-xl"></i>
+        </button>
+        <button class="social-btn text-gray-600 hover:bg-gray-50 p-2 rounded transition-colors" data-platform="copy">
+            <i class="fas fa-link text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Article Header -->
+    <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <header class="mb-12 fade-in">
+            <div class="mb-6">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span
+                        class="bg-yellow-100 text-yellow-800 text-sm px-3 py-1 rounded-full font-medium">JavaScript</span>
+                    <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full font-medium">ES2024</span>
+                    <span
+                        class="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-medium">Intermediate</span>
+                </div>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
+                    JavaScript ES2024: New Features You Should Know
+                </h1>
+                <p class="text-xl text-gray-600 leading-relaxed">
+                    Explore the latest JavaScript features that will revolutionize how you write code in 2024,
+                    including new syntax improvements, performance enhancements, and developer experience upgrades.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-200">
+                <div class="flex items-center space-x-4">
+                    <img src="/placeholder.svg?height=48&width=48" alt="Sarah Johnson" class="w-12 h-12 rounded-full">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <a href="#" class="font-semibold text-gray-900 hover:text-purple-600">Sarah Johnson</a>
+                            <span class="text-blue-500">
+                                <i class="fas fa-check-circle text-sm"></i>
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-600">Senior JavaScript Developer</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-6 text-sm text-gray-600">
+                    <div class="flex items-center space-x-1">
+                        <i class="far fa-calendar"></i>
+                        <span>Dec 15, 2024</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <i class="far fa-clock"></i>
+                        <span>8 min read</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <i class="far fa-eye"></i>
+                        <span>2.3K views</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Article Content -->
+        <div class="article-content prose prose-lg max-w-none">
+            <div class="mb-8">
+                <img src="/placeholder.svg?height=400&width=800" alt="JavaScript ES2024 Features"
+                    class="zoom-image w-full rounded-lg shadow-lg">
+            </div>
+
+            <section id="introduction" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Introduction</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    JavaScript continues to evolve at a rapid pace, and ES2024 brings some exciting new features that
+                    will
+                    make our code more expressive, performant, and maintainable. In this comprehensive guide, we'll
+                    explore
+                    the most significant additions to the language and how they can improve your development workflow.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    Whether you're a seasoned JavaScript developer or just getting started with modern ES features,
+                    this article will help you understand and implement these new capabilities in your projects.
+                </p>
+
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-6 my-8 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-400 mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-blue-900 mb-2">What's New in ES2024?</h4>
+                            <p class="text-blue-800">
+                                ES2024 introduces several groundbreaking features including improved array methods,
+                                better async handling, and enhanced developer tooling support.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="new-syntax" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">New Syntax Features</h2>
+
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">1. Array Grouping</h3>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    One of the most anticipated features is the new <code
+                        class="bg-gray-100 px-2 py-1 rounded text-sm">Array.prototype.groupBy()</code>
+                    method, which allows you to group array elements based on a callback function.
+                </p>
+
+                <div class="code-block bg-gray-900 rounded-lg p-6 mb-6 relative">
+                    <button
+                        class="copy-button bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        <i class="fas fa-copy mr-1"></i>Copy
+                    </button>
+                    <pre><code class="language-javascript">// Group users by their role
+const users = [
+  { name: 'Alice', role: 'admin' },
+  { name: 'Bob', role: 'user' },
+  { name: 'Charlie', role: 'admin' },
+  { name: 'David', role: 'user' }
+];
+
+const groupedUsers = users.groupBy(user => user.role);
+console.log(groupedUsers);
+// Output: {
+//   admin: [{ name: 'Alice', role: 'admin' }, { name: 'Charlie', role: 'admin' }],
+//   user: [{ name: 'Bob', role: 'user' }, { name: 'David', role: 'user' }]
+// }</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">2. Temporal API</h3>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    The new Temporal API provides a modern replacement for the problematic Date object,
+                    offering better timezone handling and more intuitive date manipulation.
+                </p>
+
+                <div class="code-block bg-gray-900 rounded-lg p-6 mb-6 relative">
+                    <button
+                        class="copy-button bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        <i class="fas fa-copy mr-1"></i>Copy
+                    </button>
+                    <pre><code class="language-javascript">// Working with dates using Temporal
+const now = Temporal.Now.plainDateTimeISO();
+const birthday = Temporal.PlainDate.from('1990-05-15');
+const age = now.toPlainDate().since(birthday).years;
+
+console.log(`You are ${age} years old`);
+
+// Easy timezone conversion
+const meeting = Temporal.ZonedDateTime.from('2024-03-15T14:00[America/New_York]');
+const meetingInTokyo = meeting.withTimeZone('Asia/Tokyo');
+console.log(meetingInTokyo.toString());</code></pre>
+                </div>
+            </section>
+
+            <section id="performance" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Performance Improvements</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    ES2024 doesn't just add new features; it also brings significant performance improvements
+                    that make JavaScript applications faster and more efficient.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <h4 class="font-semibold text-green-900 mb-3 flex items-center">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Faster Array Operations
+                        </h4>
+                        <p class="text-green-800 text-sm">
+                            New array methods are optimized for better performance,
+                            especially when working with large datasets.
+                        </p>
+                    </div>
+                    <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <h4 class="font-semibold text-blue-900 mb-3 flex items-center">
+                            <i class="fas fa-memory mr-2"></i>
+                            Memory Optimization
+                        </h4>
+                        <p class="text-blue-800 text-sm">
+                            Improved garbage collection and memory management
+                            reduce memory footprint in long-running applications.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-8 rounded-r-lg">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-400 mt-1 mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-yellow-900 mb-2">Performance Tip</h4>
+                            <p class="text-yellow-800">
+                                Always benchmark your specific use case, as performance improvements can vary
+                                depending on your application's architecture and data patterns.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="examples" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Practical Code Examples</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    Let's look at some real-world examples of how these new features can be used in your projects.
+                </p>
+
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">Building a Data Dashboard</h3>
+                <div class="code-block bg-gray-900 rounded-lg p-6 mb-6 relative">
+                    <button
+                        class="copy-button bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                        <i class="fas fa-copy mr-1"></i>Copy
+                    </button>
+                    <pre><code class="language-javascript">// Using new ES2024 features for data processing
+class DataDashboard {
+  constructor(data) {
+    this.data = data;
+  }
+
+  // Group sales data by region using the new groupBy method
+  getSalesByRegion() {
+    return this.data.groupBy(item => item.region);
+  }
+
+  // Calculate metrics with improved performance
+  getMetrics() {
+    const grouped = this.getSalesByRegion();
+    const metrics = {};
+
+    for (const [region, sales] of Object.entries(grouped)) {
+      metrics[region] = {
+        total: sales.reduce((sum, sale) => sum + sale.amount, 0),
+        average: sales.reduce((sum, sale) => sum + sale.amount, 0) / sales.length,
+        count: sales.length
+      };
+    }
+
+    return metrics;
+  }
+}
+
+// Usage
+const salesData = [
+  { region: 'North', amount: 1000, date: '2024-01-15' },
+  { region: 'South', amount: 1500, date: '2024-01-16' },
+  { region: 'North', amount: 800, date: '2024-01-17' },
+  // ... more data
+];
+
+const dashboard = new DataDashboard(salesData);
+console.log(dashboard.getMetrics());</code></pre>
+                </div>
+
+                <div class="mb-8">
+                    <img src="/placeholder.svg?height=300&width=600" alt="Code Example Visualization"
+                        class="zoom-image w-full rounded-lg shadow-lg">
+                </div>
+            </section>
+
+            <section id="browser-support" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Browser Support</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    As with any new JavaScript features, browser support varies. Here's the current status
+                    of ES2024 feature support across major browsers.
+                </p>
+
+                <div class="overflow-x-auto mb-6">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Feature</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Chrome</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Firefox</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Safari</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Edge</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    Array.groupBy()</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ 117+</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ 119+</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600">⚠ 17.2+</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">✓ 117+</td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Temporal API
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Polyfill</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Polyfill</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Polyfill</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">✗ Polyfill</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h4 class="font-semibold text-gray-900 mb-3">Polyfill Recommendations</h4>
+                    <p class="text-gray-700 mb-3">
+                        For features not yet supported, consider using these polyfills:
+                    </p>
+                    <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        <li><strong>Temporal:</strong> <code
+                                class="bg-gray-200 px-2 py-1 rounded text-sm">@js-temporal/polyfill</code></li>
+                        <li><strong>Array.groupBy:</strong> <code
+                                class="bg-gray-200 px-2 py-1 rounded text-sm">core-js</code></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="conclusion" class="mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Conclusion</h2>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    ES2024 brings exciting improvements to JavaScript that will enhance developer productivity
+                    and application performance. While some features are still rolling out across browsers,
+                    the future of JavaScript development looks brighter than ever.
+                </p>
+                <p class="text-gray-700 leading-relaxed mb-6">
+                    Start experimenting with these features in your development environment, and consider
+                    using polyfills for production applications until browser support becomes more widespread.
+                </p>
+
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                    <h4 class="font-semibold text-purple-900 mb-3 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Key Takeaways
+                    </h4>
+                    <ul class="list-disc list-inside text-purple-800 space-y-2">
+                        <li>Array.groupBy() simplifies data organization and processing</li>
+                        <li>Temporal API provides a modern solution for date/time handling</li>
+                        <li>Performance improvements benefit all JavaScript applications</li>
+                        <li>Browser support is gradually improving - use polyfills when needed</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- Article Footer -->
+        <footer class="border-t border-gray-200 pt-8 mt-12">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">JavaScript</span>
+                    <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">ES2024</span>
+                    <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">Web Development</span>
+                    <span class="bg-purple-100 text-purple-800 text-sm px-3 py-1 rounded-full">Programming</span>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button id="likeBtn"
+                        class="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors">
+                        <i class="far fa-heart"></i>
+                        <span id="likeCount">156</span>
+                    </button>
+                    <button class="flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors">
+                        <i class="far fa-comment"></i>
+                        <span>23</span>
+                    </button>
+                    <button class="flex items-center space-x-2 text-gray-600 hover:text-green-500 transition-colors">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Author Bio -->
+            <div class="bg-gray-50 rounded-lg p-6 mb-8">
+                <div class="flex items-start space-x-4">
+                    <img src="/placeholder.svg?height=80&width=80" alt="Sarah Johnson" class="w-20 h-20 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h3 class="text-xl font-semibold text-gray-900">Sarah Johnson</h3>
+                            <span class="text-blue-500">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            Senior JavaScript Developer with 8+ years of experience in web development.
+                            Passionate about modern JavaScript, performance optimization, and developer education.
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">View Profile</a>
+                            <button
+                                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                Follow
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </article>
+
+    <!-- Comments Section -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Comments (23)</h2>
+
+        <!-- Comment Form -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Leave a Comment</h3>
+            <form id="commentForm">
+                <div class="mb-4">
+                    <textarea placeholder="Share your thoughts..."
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                        rows="4"></textarea>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center">
+                            <input type="checkbox"
+                                class="rounded border-gray-300 text-purple-600 focus:ring-purple-500">
+                            <span class="ml-2 text-sm text-gray-600">Notify me of replies</span>
+                        </label>
+                    </div>
+                    <button type="submit"
+                        class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Comments List -->
+        <div class="space-y-6">
+            <!-- Comment 1 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-start space-x-4">
+                    <img src="/placeholder.svg?height=40&width=40" alt="Mike Chen" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h4 class="font-semibold text-gray-900">Mike Chen</h4>
+                            <span class="text-sm text-gray-500">2 hours ago</span>
+                        </div>
+                        <p class="text-gray-700 mb-3">
+                            Great article! The Array.groupBy() method is exactly what I've been waiting for.
+                            No more writing custom grouping functions. Can't wait to use this in production.
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-500 hover:text-purple-600 text-sm">
+                                <i class="far fa-thumbs-up mr-1"></i>12
+                            </button>
+                            <button class="text-gray-500 hover:text-purple-600 text-sm">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment 2 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-start space-x-4">
+                    <img src="/placeholder.svg?height=40&width=40" alt="Emily Rodriguez" class="w-10 h-10 rounded-full">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <h4 class="font-semibold text-gray-900">Emily Rodriguez</h4>
+                            <span class="text-sm text-gray-500">4 hours ago</span>
+                        </div>
+                        <p class="text-gray-700 mb-3">
+                            The Temporal API section was particularly helpful. I've been struggling with timezone
+                            issues in my current project. Time to start experimenting with the polyfill!
+                        </p>
+                        <div class="flex items-center space-x-4">
+                            <button class="text-gray-500 hover:text-purple-600 text-sm">
+                                <i class="far fa-thumbs-up mr-1"></i>8
+                            </button>
+                            <button class="text-gray-500 hover:text-purple-600 text-sm">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load More Comments -->
+        <div class="text-center mt-8">
+            <button class="text-purple-600 hover:text-purple-700 font-medium">
+                Load More Comments
+            </button>
+        </div>
+    </section>
+
+    <!-- Related Articles -->
+    <section class="bg-gray-100 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Related Articles</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Related Article 1 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <img src="/placeholder.svg?height=200&width=400" alt="Node.js Best Practices"
+                        class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Node.js</span>
+                            <span class="text-gray-500 text-sm ml-auto">Dec 12, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                            <a href="#">Node.js Best Practices for 2024</a>
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Essential Node.js practices every developer should follow for building scalable
+                            applications.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="Mike Chen"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-sm text-gray-700">Mike Chen</span>
+                            </div>
+                            <span class="text-sm text-gray-500">5 min read</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Related Article 2 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <img src="/placeholder.svg?height=200&width=400" alt="React Performance"
+                        class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">React</span>
+                            <span class="text-gray-500 text-sm ml-auto">Dec 10, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                            <a href="#">React Performance Optimization Tips</a>
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Learn advanced techniques to optimize your React applications for better performance.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="Lisa Wang"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-sm text-gray-700">Lisa Wang</span>
+                            </div>
+                            <span class="text-sm text-gray-500">7 min read</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Related Article 3 -->
+                <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                    <img src="/placeholder.svg?height=200&width=400" alt="TypeScript Guide"
+                        class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-3">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">TypeScript</span>
+                            <span class="text-gray-500 text-sm ml-auto">Dec 8, 2024</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                            <a href="#">TypeScript 5.3: Advanced Features</a>
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Explore the latest TypeScript features and how they improve type safety and developer
+                            experience.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="/placeholder.svg?height=24&width=24" alt="David Kim"
+                                    class="w-6 h-6 rounded-full mr-2">
+                                <span class="text-sm text-gray-700">David Kim</span>
+                            </div>
+                            <span class="text-sm text-gray-500">6 min read</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="py-16 bg-gray-900 text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-4">Stay Updated</h2>
+            <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
+                Get the latest JavaScript articles, tutorials, and news delivered to your inbox weekly.
+            </p>
+            <form class="max-w-md mx-auto flex gap-4">
+                <input type="email" placeholder="Enter your email"
+                    class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button type="submit"
+                    class="bg-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-12 border-t">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">BlogSite</h3>
+                    <p class="text-gray-600 mb-4">
+                        Your go-to resource for the latest in web development, programming tutorials, and tech insights.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-purple-600 transition-colors">
+                            <i class="fab fa-linkedin text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Categories</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">JavaScript</a>
+                        </li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">React</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Node.js</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">CSS</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-900 mb-4">Company</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">About</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Authors</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Contact</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-purple-600 transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t mt-8 pt-8 text-center text-gray-600">
+                <p>&copy; 2024 BlogSite. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div class="modal-overlay" id="imageModal">
+        <button class="absolute top-4 right-4 text-white text-2xl hover:text-gray-300" id="closeModal">
+            <i class="fas fa-times"></i>
+        </button>
+        <img class="modal-image" id="modalImage" src="/placeholder.svg" alt="">
+    </div>
+
+    <script>
+        // Reading progress bar
+        function updateReadingProgress() {
+            const article = document.querySelector('.article-content');
+            const scrollTop = window.pageYOffset;
+            const docHeight = article.offsetHeight;
+            const winHeight = window.innerHeight;
+            const scrollPercent = scrollTop / (docHeight - winHeight);
+            const scrollPercentRounded = Math.round(scrollPercent * 100);
+
+            document.querySelector('.reading-progress').style.width = Math.min(scrollPercentRounded, 100) + '%';
+        }
+
+        // Table of contents active link
+        function updateTOC() {
+            const sections = document.querySelectorAll('section[id]');
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Show/hide floating elements
+        function toggleFloatingElements() {
+            const toc = document.querySelector('.floating-toc');
+            const socialShare = document.querySelector('.social-share');
+            const scrollY = window.pageYOffset;
+
+            if (scrollY > 500) {
+                toc.classList.remove('hidden');
+                socialShare.classList.remove('hidden');
+            } else {
+                toc.classList.add('hidden');
+                socialShare.classList.add('hidden');
+            }
+        }
+
+        // Scroll event listener
+        window.addEventListener('scroll', () => {
+            updateReadingProgress();
+            updateTOC();
+            toggleFloatingElements();
+        });
+
+        // Copy code functionality
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const codeBlock = button.parentElement.querySelector('code');
+                const text = codeBlock.textContent;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+                    }, 2000);
+                });
+            });
+        });
+
+        // Social sharing
+        document.querySelectorAll('.social-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const platform = button.dataset.platform;
+                const url = window.location.href;
+                const title = document.title;
+
+                let shareUrl = '';
+                switch (platform) {
+                    case 'twitter':
+                        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                        break;
+                    case 'facebook':
+                        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                        break;
+                    case 'linkedin':
+                        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                        break;
+                    case 'whatsapp':
+                        shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`;
+                        break;
+                    case 'copy':
+                        navigator.clipboard.writeText(url).then(() => {
+                            button.innerHTML = '<i class="fas fa-check text-xl"></i>';
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="fas fa-link text-xl"></i>';
+                            }, 2000);
+                        });
+                        return;
+                }
+
+                if (shareUrl) {
+                    window.open(shareUrl, '_blank', 'width=600,height=400');
+                }
+            });
+        });
+
+        // Bookmark functionality
+        document.getElementById('bookmarkBtn').addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.classList.add('text-purple-600');
+                // Show toast notification
+                showToast('Article bookmarked!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.classList.remove('text-purple-600');
+                showToast('Bookmark removed');
+            }
+        });
+
+        // Like functionality
+        document.getElementById('likeBtn').addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            const countSpan = document.getElementById('likeCount');
+            let count = parseInt(countSpan.textContent);
+
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.classList.add('text-red-500');
+                countSpan.textContent = count + 1;
+                showToast('Thanks for liking!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.classList.remove('text-red-500');
+                countSpan.textContent = count - 1;
+            }
+        });
+
+        // Image zoom functionality
+        document.querySelectorAll('.zoom-image').forEach(img => {
+            img.addEventListener('click', () => {
+                const modal = document.getElementById('imageModal');
+                const modalImg = document.getElementById('modalImage');
+                modalImg.src = img.src;
+                modal.classList.add('active');
+            });
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('imageModal').classList.remove('active');
+        });
+
+        document.getElementById('imageModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove('active');
+            }
+        });
+
+        // Comment form
+        document.getElementById('commentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const textarea = e.target.querySelector('textarea');
+            if (textarea.value.trim()) {
+                showToast('Comment posted successfully!');
+                textarea.value = '';
+            }
+        });
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-full', 'opacity-0');
+            }, 100);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-full', 'opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Smooth scrolling for TOC links
+        document.querySelectorAll('.toc-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateReadingProgress();
+            updateTOC();
+            toggleFloatingElements();
+        });
+    </script>
+</body>
+
+</html>
