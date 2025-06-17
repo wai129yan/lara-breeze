@@ -15,10 +15,10 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/test', function () {
-    $post = Post::find(1);
-    return $post->category->name;
-});
+// Route::get('/test', function () {
+//     $post = Post::find(1);
+//     return $post->category->name;
+// });
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
