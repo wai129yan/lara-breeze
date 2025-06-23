@@ -13,7 +13,7 @@
 
               <!-- Navigation -->
               <nav class="hidden md:flex space-x-8">
-                  <a href="#" class="text-gray-900 hover:text-primary font-medium transition">Home</a>
+                  <a href="{{route('home')}}" class="text-gray-900 hover:text-primary font-medium transition">Home</a>
                   <a href="{{ route('categories.index') }}"
                       class="text-gray-600 hover:text-primary font-medium transition">Categories</a>
                   <a href="#" class="text-gray-600 hover:text-primary font-medium transition">Popular</a>

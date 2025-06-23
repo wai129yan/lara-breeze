@@ -25,7 +25,20 @@ class CategoryController extends Controller
 
     public function show(Category $category)
     {
-        return $category;
+        // If you want to show all categories (as your current template expects)
+        $categories = Category::with(['posts.user'])->get();
+
+        // Pass the current category for breadcrumbs and hero section
+        return view('categories.show', compact('categories', 'category'));
+    }
+
+    public function edit($id)
+    {
+        // Find the category by ID
+        $category = Category::findOrFail($id);
+
+        // Return the edit view with the category data
+        return view('categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
@@ -36,12 +49,14 @@ class CategoryController extends Controller
         ]);
 
         $category->update($validated);
-        return $category;
+
+        // Redirect back to index with a success alert
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully.');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
-        return response()->noContent();
+        return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
 }
