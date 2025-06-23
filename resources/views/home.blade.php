@@ -68,7 +68,7 @@
                                 class="w-full h-48 object-cover">
                         </a>
                         <div class="p-6">
-                            <a href="#"
+                            <a href="{{ route('categories.show', $post->category->id) }}"
                                 class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">{{ $post->category->name }}</a>
                             <h3 class="text-xl font-bold mb-2">
                                 <a href="{{ route('posts.show', $post) }}"

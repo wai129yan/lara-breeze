@@ -243,13 +243,13 @@
         </div>
     </section>
 
-    <!-- Articles Grid -->
+    <!-- PHP Grid -->
     <section class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900">Articles</h2>
+                    <h2 class="text-2xl font-bold text-gray-900">PHP</h2>
                     <p class="text-gray-600 mt-1">
                         Showing <span id="resultCount">12</span> of <span id="totalCount">127</span> articles
                     </p>
@@ -298,7 +298,7 @@
             <!-- Articles Grid -->
             <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Article 1 -->
-                @foreach ($categories as $category)
+                @foreach ($phpCategory as $category)
                     <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
                         data-title="" data-author="Sarah Johnson" data-date="2024-12-15" data-views="2300"
                         data-difficulty="intermediate" data-tags="es6,performance">
@@ -366,78 +366,290 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Pagination -->
-            <div class="flex justify-center mt-12">
-                <nav class="flex items-center space-x-2">
-                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700 disabled:opacity-50" disabled>
-                        <i class="fas fa-chevron-left"></i>
+    <!-- Nodejs Grid -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Results Info -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">JavaScript</h2>
+                    <p class="text-gray-600 mt-1">
+                        Showing <span id="resultCount">12</span> of <span id="totalCount">127</span> articles
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="gridView" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
+                        <i class="fas fa-th-large"></i>
                     </button>
-                    <button class="px-4 py-2 bg-purple-600 text-white rounded-lg">1</button>
-                    <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">2</button>
-                    <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">3</button>
-                    <span class="px-2 text-gray-500">...</span>
-                    <button class="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">12</button>
-                    <button class="px-3 py-2 text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-chevron-right"></i>
+                    <button id="listView" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+                        <i class="fas fa-list"></i>
                     </button>
-                </nav>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Grid -->
+            <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Article 1 -->
+                @foreach ($jsCategory as $category)
+                    <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="" data-author="Sarah Johnson" data-date="2024-12-15" data-views="2300"
+                        data-difficulty="intermediate" data-tags="es6,performance">
+                        <img src="/placeholder.svg?height=200&width=400" alt="JavaScript ES2024"
+                            class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span
+                                    class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Intermediate</span>
+                                <span class="text-gray-500 text-sm">{{ $category->created_at->diffForHumans() }}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="{{ route('categories.show', $category->id) }}">{{ $category->name }}</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                {{ $category->description }}
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Sarah Johnson"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <a href=""><span
+                                            class="text-sm text-gray-900 font-bold">{{ $category->name }}</span></a>
+                                </div>
+                                <div class="flex items-center text-gray-500 text-sm">
+                                    <i class="far fa-eye mr-1"></i>
+                                    <span>2.3K</span>
+                                </div>
+                            </div>
+
+
+                            <div class="flex gap-2">
+                                <a href="{{ route('categories.edit', $category->id) }}"
+                                    class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
+                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+
+            </div>
+            <!-- No Results -->
+            <div id="noResults" class="hidden text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No articles found</h3>
+                    <p class="text-gray-600 mb-6">Try adjusting your search criteria or browse all articles.</p>
+                    <button id="clearFilters"
+                        class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        Clear All Filters
+                    </button>
+                </div>
             </div>
         </div>
     </section>
+
+    <!-- Nodejs Grid -->
+    <section class="py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Results Info -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">NodeJs</h2>
+                    <p class="text-gray-600 mt-1">
+                        Showing <span id="resultCount">12</span> of <span id="totalCount">127</span> articles
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="gridView" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button id="listView" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="hidden grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="skeleton h-48"></div>
+                    <div class="p-6">
+                        <div class="skeleton h-4 w-20 mb-3 rounded"></div>
+                        <div class="skeleton h-6 w-full mb-3 rounded"></div>
+                        <div class="skeleton h-4 w-full mb-2 rounded"></div>
+                        <div class="skeleton h-4 w-3/4 rounded"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Articles Grid -->
+            <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Article 1 -->
+                @foreach ($nodeJsCategory as $category)
+                    <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
+                        data-title="" data-author="Sarah Johnson" data-date="2024-12-15" data-views="2300"
+                        data-difficulty="intermediate" data-tags="es6,performance">
+                        <img src="/placeholder.svg?height=200&width=400" alt="JavaScript ES2024"
+                            class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <span
+                                    class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">Intermediate</span>
+                                <span class="text-gray-500 text-sm">{{ $category->created_at->diffForHumans() }}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="{{ route('categories.show', $category->id) }}">{{ $category->name }}</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                {{ $category->description }}
+                            </p>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="/placeholder.svg?height=32&width=32" alt="Sarah Johnson"
+                                        class="w-8 h-8 rounded-full mr-3">
+                                    <a href=""><span
+                                            class="text-sm text-gray-900 font-bold">{{ $category->name }}</span></a>
+                                </div>
+                                <div class="flex items-center text-gray-500 text-sm">
+                                    <i class="far fa-eye mr-1"></i>
+                                    <span>2.3K</span>
+                                </div>
+                            </div>
+
+
+                            <div class="flex gap-2">
+                                <a href="{{ route('categories.edit', $category->id) }}"
+                                    class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
+                                <form action="{{ route('categories.destroy', $category->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="inline-flex items-center px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition">
+                                        <i class="fas fa-trash mr-1"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+
+            </div>
+
+            <!-- No Results -->
+            <div id="noResults" class="hidden text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No articles found</h3>
+                    <p class="text-gray-600 mb-6">Try adjusting your search criteria or browse all articles.</p>
+                    <button id="clearFilters"
+                        class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
 
     <!-- Related Categories -->
     <section class="py-16 bg-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Explore Other Categories</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <a href="#" class="group bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-                    <div class="text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
-                            <i class="fab fa-react text-2xl text-blue-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">React</h3>
-                        <p class="text-gray-600 text-sm mb-4">89 Articles</p>
-                        <span class="text-blue-600 font-medium group-hover:text-blue-700">Explore React →</span>
-                    </div>
-                </a>
+                @php
+                    // $iconMap;
+                    $defaultIcon = 'fas fa-code';
 
-                <a href="#" class="group bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-                    <div class="text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4 group-hover:bg-green-200 transition-colors">
-                            <i class="fab fa-node-js text-2xl text-green-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Node.js</h3>
-                        <p class="text-gray-600 text-sm mb-4">67 Articles</p>
-                        <span class="text-green-600 font-medium group-hover:text-green-700">Explore Node.js →</span>
-                    </div>
-                </a>
+                    function getCategoryIcon($categoryName, $iconMap, $defaultIcon)
+                    {
+                        $key = strtolower(trim($categoryName));
+                        return $iconMap[$key] ?? $defaultIcon;
+                    }
+                @endphp
 
-                <a href="#" class="group bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-                    <div class="text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4 group-hover:bg-purple-200 transition-colors">
-                            <i class="fas fa-robot text-2xl text-purple-600"></i>
+                @foreach ($mostUsedCategories as $category)
+                    <a href="{{ route('categories.show', $category->id) }}"
+                        class="group bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
+                        <div class="text-center">
+                            <div
+                                class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
+                                <i
+                                    class="{{ getCategoryIcon($category->name, $iconMap, $defaultIcon) }} text-2xl text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ $category->name }}</h3>
+                            <p class="text-gray-600 text-sm mb-4">{{ $category->posts_count }} posts</p>
+                            <span class="text-blue-600 font-medium group-hover:text-blue-700">Explore
+                                {{ $category->name }} →</span>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">AI/ML</h3>
-                        <p class="text-gray-600 text-sm mb-4">43 Articles</p>
-                        <span class="text-purple-600 font-medium group-hover:text-purple-700">Explore AI/ML →</span>
-                    </div>
-                </a>
+                    </a>
+                @endforeach
 
-                <a href="#" class="group bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all">
-                    <div class="text-center">
-                        <div
-                            class="inline-flex items-center justify-center w-16 h-16 bg-pink-100 rounded-full mb-4 group-hover:bg-pink-200 transition-colors">
-                            <i class="fas fa-paint-brush text-2xl text-pink-600"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">CSS</h3>
-                        <p class="text-gray-600 text-sm mb-4">78 Articles</p>
-                        <span class="text-pink-600 font-medium group-hover:text-pink-700">Explore CSS →</span>
-                    </div>
-                </a>
             </div>
         </div>
     </section>
