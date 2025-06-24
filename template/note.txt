@@ -1,0 +1,39 @@
+$mostFollowerUser = User::withCount('followers')
+            ->orderBy('followers_count', 'desc')
+            ->limit(4)
+            ->get();
+        // most followed user list
+        // $mostFollowedUser = User::withCount('following')
+        //     ->orderBy('following_count', 'desc')
+        //     ->limit(4)
+        //     ->get();
+        // most post user list
+        $mostPostUser = User::withCount('posts')
+            ->orderBy('posts_count', 'desc')
+            ->limit(4)
+            ->get();
+        // most clap user list
+        $mostClapUser = User::withCount('claps')
+            ->orderBy('claps_count', 'desc')
+            ->limit(4)
+            ->get();
+        // most comment user list
+        // $mostCommentUser = User::withCount('comments')
+        //     ->orderBy('comments_count', 'desc')
+        //     ->limit(4)
+        //     ->get();
+        // //most series user list
+        // $mostSeriesUser = User::withCount('series')
+        //     ->orderBy('series_count', 'desc')
+        //     ->limit(4)
+        //     ->get();
+        // most tag user list
+        $mostTagUser = User::withCount('tags')
+            ->orderBy('tags_count', 'desc')
+            ->limit(4)
+            ->get();
+        // most category user list
+        $mostCategoryUser = User::withCount('categories')
+            ->orderBy('categories_count', 'desc')
+            ->limit(4)
+            ->get();

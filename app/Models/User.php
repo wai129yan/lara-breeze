@@ -77,4 +77,100 @@ class User extends Authenticatable
     {
         return $this->posts()->where('status', 'draft');
     }
+
+    public function following()
+    {
+        return $this
+            ->belongsToMany(User::class, 'user_follows', 'follower_id', 'followed_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Users that are following this user (followers)
+     */
+    public function followers()
+    {
+        return $this
+            ->belongsToMany(User::class, 'user_follows', 'followed_id', 'follower_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Check if this user is following another user
+     */
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('followed_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if this user is followed by another user
+     */
+    public function isFollowedBy(User $user)
+    {
+        return $this->followers()->where('follower_id', $user->id)->exists();
+    }
+
+    /**
+     * Follow a user
+     */
+    public function follow(User $user)
+    {
+        if ($this->id === $user->id) {
+            return false;  // Can't follow yourself
+        }
+
+        return $this->following()->syncWithoutDetaching([$user->id]);
+    }
+
+    /**
+     * Unfollow a user
+     */
+    public function unfollow(User $user)
+    {
+        return $this->following()->detach($user->id);
+    }
+
+    /**
+     * Toggle follow status
+     */
+    public function toggleFollow(User $user)
+    {
+        if ($this->isFollowing($user)) {
+            return $this->unfollow($user);
+        }
+
+        return $this->follow($user);
+    }
+
+    /**
+     * Get followers count
+     */
+    public function getFollowersCountAttribute()
+    {
+        return $this->followers()->count();
+    }
+
+    /**
+     * Get following count
+     */
+    public function getFollowingCountAttribute()
+    {
+        return $this->following()->count();
+    }
+
+    public function claps()
+    {
+        return $this->hasMany(Clap::class);
+    }
+
+    // OR if you want claps received by user's posts:
+
+    /**
+     * Claps received on this user's posts
+     */
+    public function receivedClaps()
+    {
+        return $this->hasManyThrough(Clap::class, Post::class);
+    }
 }

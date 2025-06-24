@@ -369,7 +369,7 @@
         </div>
     </section>
 
-    <!-- Nodejs Grid -->
+    <!-- js Grid -->
     <section class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Results Info -->
@@ -381,10 +381,10 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="gridView" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
+                    <button id="gridView2" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
                         <i class="fas fa-th-large"></i>
                     </button>
-                    <button id="listView" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button id="listView2" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
@@ -422,7 +422,7 @@
             </div>
 
             <!-- Articles Grid -->
-            <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div id="articlesGrid2" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Article 1 -->
                 @foreach ($jsCategory as $category)
                     <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
@@ -503,10 +503,10 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="gridView" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
+                    <button id="gridView3" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
                         <i class="fas fa-th-large"></i>
                     </button>
-                    <button id="listView" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button id="listView3" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
@@ -544,7 +544,7 @@
             </div>
 
             <!-- Articles Grid -->
-            <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div id="articlesGrid3" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Article 1 -->
                 @foreach ($nodeJsCategory as $category)
                     <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
@@ -726,6 +726,16 @@
                 gridViewBtn.addEventListener('click', () => toggleView('grid'));
                 listViewBtn.addEventListener('click', () => toggleView('list'));
 
+                const gridViewBtn2 = document.getElementById('gridView2');
+                const listViewBtn2 = document.getElementById('listView2');
+                gridViewBtn2.addEventListener('click', () => toggleView2('grid'));
+                listViewBtn2.addEventListener('click', () => toggleView2('list'));
+
+                const gridViewBtn3 = document.getElementById('gridView3');
+                const listViewBtn3 = document.getElementById('listView3');
+                gridViewBtn3.addEventListener('click', () => toggleView3('grid'));
+                listViewBtn3.addEventListener('click', () => toggleView3('list'));
+
                 // Clear filters
                 const clearFiltersBtn = document.getElementById('clearFilters');
                 clearFiltersBtn.addEventListener('click', clearAllFilters);
@@ -867,6 +877,58 @@
                 const gridBtn = document.getElementById('gridView');
                 const listBtn = document.getElementById('listView');
                 const grid = document.getElementById('articlesGrid');
+
+                // currentView = view;
+
+                if (view === 'grid') {
+                    gridBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    gridBtn.classList.remove('text-gray-400');
+                    listBtn.classList.add('text-gray-400');
+                    listBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    grid.classList.remove('grid-cols-1');
+                    grid.classList.add('md:grid-cols-2', 'lg:grid-cols-3');
+                } else {
+                    listBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    listBtn.classList.remove('text-gray-400');
+                    gridBtn.classList.add('text-gray-400');
+                    gridBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    grid.classList.add('grid-cols-1');
+                    grid.classList.remove('md:grid-cols-2', 'lg:grid-cols-3');
+                }
+            }
+
+            function toggleView2(view) {
+                const gridBtn = document.getElementById('gridView2');
+                const listBtn = document.getElementById('listView2');
+                const grid = document.getElementById('articlesGrid2');
+
+                currentView = view;
+
+                if (view === 'grid') {
+                    gridBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    gridBtn.classList.remove('text-gray-400');
+                    listBtn.classList.add('text-gray-400');
+                    listBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    grid.classList.remove('grid-cols-1');
+                    grid.classList.add('md:grid-cols-2', 'lg:grid-cols-3');
+                } else {
+                    listBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    listBtn.classList.remove('text-gray-400');
+                    gridBtn.classList.add('text-gray-400');
+                    gridBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    grid.classList.add('grid-cols-1');
+                    grid.classList.remove('md:grid-cols-2', 'lg:grid-cols-3');
+                }
+            }
+
+            function toggleView3(view) {
+                const gridBtn = document.getElementById('gridView3');
+                const listBtn = document.getElementById('listView3');
+                const grid = document.getElementById('articlesGrid3');
 
                 currentView = view;
 

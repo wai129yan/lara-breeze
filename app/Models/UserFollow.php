@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class UserFollow extends Model
 {
     use HasFactory;
 
-    public $incrementing = false; // Because composite primary key
+    public $incrementing = false;  // Because composite primary key
     protected $primaryKey = ['follower_id', 'followed_id'];
     protected $table = 'user_follows';
 

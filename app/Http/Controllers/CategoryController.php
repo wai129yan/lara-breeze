@@ -84,6 +84,7 @@ class CategoryController extends Controller
             ->limit(4)
             ->get();
         $categories = Post::whereBelongsTo($category)->get();
+        // return $categories;
         // return $relatedCategories;
         // return $posts;
         // Pass the current category for breadcrumbs and hero section

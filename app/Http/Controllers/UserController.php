@@ -13,11 +13,31 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'List Semua User',
-            'data' => $users
-        ]);
+        // most follower user list
+
+        // Most followed users
+        $mostFollowerUser = User::withCount('followers')
+            ->having('followers_count', '>', 0)  // Only users with followers
+            ->orderBy('followers_count', 'desc')
+            ->limit(4)
+            ->get();
+
+        // return $mostFollowerUser;
+        // Most active posters
+        $mostPostUser = User::withCount('posts')
+            ->having('posts_count', '>', 0)  // Only users with posts
+            ->orderBy('posts_count', 'desc')
+            ->limit(4)
+            ->get();
+        // return $mostPostUser;
+        // Most clapped users (assuming you want claps received)
+        $mostClapUser = User::withCount('receivedClaps')
+            ->having('received_claps_count', '>', 0)
+            ->orderBy('received_claps_count', 'desc')
+            ->limit(4)
+            ->get();
+        // return $mostClapUser;
+        return view('authors.index', compact('users'));
     }
 
     /**

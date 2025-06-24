@@ -217,7 +217,7 @@
                 {{ $category->description }}
             </p>
             <div class="flex items-center justify-center mb-6">
-                <img src="/placeholder.svg?height=48&width=48" alt="Sarah Johnson"
+                <img src="{{ asset('storage/images/' . $category->featured_image) }}" alt="Sarah Johnson"
                     class="w-12 h-12 rounded-full mr-3 border-2 border-purple-200 shadow">
                 <a href="" class="text-base text-gray-900 font-bold hover:text-purple-600">{{ $category->name }}</a>
             </div>
@@ -243,10 +243,10 @@
                     </p>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="gridView" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
+                    <button id="gridView4" class="p-2 text-purple-600 bg-purple-100 rounded-lg">
                         <i class="fas fa-th-large"></i>
                     </button>
-                    <button id="listView" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
+                    <button id="listView4" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg">
                         <i class="fas fa-list"></i>
                     </button>
                 </div>
@@ -284,7 +284,7 @@
             </div>
 
             <!-- categories Grid -->
-            <div id="articlesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div id="articlesGrid4" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Article 1 -->
                 @foreach ($categories as $category)
                     <article class="article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in"
@@ -412,7 +412,7 @@
         </div>
     </section> --}}
 
-    @push('script')
+    {{-- @push('script')
         <script>
             // Global variables
             let allArticles = [];
@@ -461,10 +461,11 @@
                 });
 
                 // View toggle
-                const gridViewBtn = document.getElementById('gridView');
-                const listViewBtn = document.getElementById('listView');
-                gridViewBtn.addEventListener('click', () => toggleView('grid'));
-                listViewBtn.addEventListener('click', () => toggleView('list'));
+                const gridViewBtn4 = document.getElementById('gridView4');
+                const listViewBtn4 = document.getElementById('listView4');
+
+                gridViewBtn4.addEventListener('click', () => toggleView4('grid'));
+                listViewBtn4.addEventListener('click', () => toggleView4('list'));
 
                 // Clear filters
                 const clearFiltersBtn = document.getElementById('clearFilters');
@@ -578,7 +579,7 @@
             }
 
             function renderArticles() {
-                const grid = document.getElementById('articlesGrid');
+                const grid = document.getElementById('articlesGrid4');
                 const noResults = document.getElementById('noResults');
 
                 // Hide all articles first
@@ -603,10 +604,10 @@
                 updateResultsCount();
             }
 
-            function toggleView(view) {
-                const gridBtn = document.getElementById('gridView');
-                const listBtn = document.getElementById('listView');
-                const grid = document.getElementById('articlesGrid');
+            function toggleView4(view) {
+                const gridBtn = document.getElementById('gridView4');
+                const listBtn = document.getElementById('listView4');
+                const grid = document.getElementById('articlesGrid4');
 
                 currentView = view;
 
@@ -661,12 +662,344 @@
 
             function showLoading() {
                 document.getElementById('loadingState').classList.remove('hidden');
-                document.getElementById('articlesGrid').style.opacity = '0.5';
+                document.getElementById('articlesGrid4').style.opacity = '0.5';
             }
 
             function hideLoading() {
                 document.getElementById('loadingState').classList.add('hidden');
-                document.getElementById('articlesGrid').style.opacity = '1';
+                document.getElementById('articlesGrid4').style.opacity = '1';
+            }
+
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        </script>
+    @endpush --}}
+
+    @push('script')
+        <script>
+            // Global variables
+            let allArticles = [];
+            let filteredArticles = [];
+            let currentView = 'grid';
+
+            // Initialize the page
+            document.addEventListener('DOMContentLoaded', function() {
+                loadArticles();
+                setupEventListeners();
+            });
+
+            function loadArticles() {
+                // Get all article cards and store their data
+                const articleCards = document.querySelectorAll('.article-card');
+                allArticles = Array.from(articleCards).map(card => ({
+                    element: card,
+                    title: card.dataset.title ? card.dataset.title.toLowerCase() : '',
+                    author: card.dataset.author ? card.dataset.author.toLowerCase() : '',
+                    date: card.dataset.date ? new Date(card.dataset.date) : new Date(),
+                    views: parseInt(card.dataset.views) || 0,
+                    difficulty: card.dataset.difficulty || 'beginner',
+                    tags: card.dataset.tags ? card.dataset.tags.split(',') : []
+                }));
+                filteredArticles = [...allArticles];
+                updateResultsCount();
+            }
+
+            function setupEventListeners() {
+                // Search functionality
+                const searchInput = document.getElementById('search');
+                if (searchInput) {
+                    searchInput.addEventListener('input', debounce(handleSearch, 300));
+                }
+
+                // Sort functionality
+                const sortSelect = document.getElementById('sort');
+                if (sortSelect) {
+                    sortSelect.addEventListener('change', handleSort);
+                }
+
+                // Difficulty filter
+                const difficultySelect = document.getElementById('difficulty');
+                if (difficultySelect) {
+                    difficultySelect.addEventListener('change', handleDifficultyFilter);
+                }
+
+                // Tag filters
+                const tagFilters = document.querySelectorAll('.tag-filter');
+                tagFilters.forEach(tag => {
+                    tag.addEventListener('click', handleTagFilter);
+                });
+
+                // View toggle - Fixed the function names
+                const gridViewBtn = document.getElementById('gridView4');
+                const listViewBtn = document.getElementById('listView4');
+
+                if (gridViewBtn) {
+                    gridViewBtn.addEventListener('click', () => toggleView('grid'));
+                }
+                if (listViewBtn) {
+                    listViewBtn.addEventListener('click', () => toggleView('list'));
+                }
+
+                // Clear filters
+                const clearFiltersBtn = document.getElementById('clearFilters');
+                if (clearFiltersBtn) {
+                    clearFiltersBtn.addEventListener('click', clearAllFilters);
+                }
+            }
+
+            function handleSearch(event) {
+                const searchTerm = event.target.value.toLowerCase();
+                showLoading();
+
+                setTimeout(() => {
+                    applyAllFilters();
+                    hideLoading();
+                }, 500);
+            }
+
+            function handleSort(event) {
+                const sortBy = event.target.value;
+                showLoading();
+
+                setTimeout(() => {
+                    switch (sortBy) {
+                        case 'newest':
+                            filteredArticles.sort((a, b) => b.date - a.date);
+                            break;
+                        case 'oldest':
+                            filteredArticles.sort((a, b) => a.date - b.date);
+                            break;
+                        case 'popular':
+                        case 'views':
+                            filteredArticles.sort((a, b) => b.views - a.views);
+                            break;
+                        case 'title':
+                            filteredArticles.sort((a, b) => a.title.localeCompare(b.title));
+                            break;
+                    }
+                    renderArticles();
+                    hideLoading();
+                }, 300);
+            }
+
+            function handleDifficultyFilter(event) {
+                const difficulty = event.target.value;
+                showLoading();
+
+                setTimeout(() => {
+                    applyAllFilters();
+                    hideLoading();
+                }, 300);
+            }
+
+            function handleTagFilter(event) {
+                const tagButtons = document.querySelectorAll('.tag-filter');
+
+                // Update active state
+                tagButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+
+                event.target.classList.add('active', 'bg-purple-600', 'text-white');
+                event.target.classList.remove('bg-gray-200', 'text-gray-700');
+
+                showLoading();
+
+                setTimeout(() => {
+                    applyAllFilters();
+                    hideLoading();
+                }, 300);
+            }
+
+            function applyAllFilters() {
+                const searchInput = document.getElementById('search');
+                const difficultySelect = document.getElementById('difficulty');
+                const activeTagElement = document.querySelector('.tag-filter.active');
+
+                const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+                const difficulty = difficultySelect ? difficultySelect.value : 'all';
+                const activeTag = activeTagElement ? activeTagElement.dataset.tag : 'all';
+
+                filteredArticles = allArticles.filter(article => {
+                    const matchesSearch = !searchTerm ||
+                        article.title.includes(searchTerm) ||
+                        article.author.includes(searchTerm);
+
+                    const matchesDifficulty = difficulty === 'all' ||
+                        article.difficulty === difficulty;
+
+                    const matchesTag = activeTag === 'all' ||
+                        article.tags.includes(activeTag);
+
+                    return matchesSearch && matchesDifficulty && matchesTag;
+                });
+
+                renderArticles();
+            }
+
+            function renderArticles() {
+                const grid = document.getElementById('articlesGrid4');
+                const noResults = document.getElementById('noResults');
+
+                if (!grid) return;
+
+                // Hide all articles first
+                allArticles.forEach(article => {
+                    article.element.style.display = 'none';
+                });
+
+                if (filteredArticles.length === 0) {
+                    if (noResults) noResults.classList.remove('hidden');
+                    grid.style.display = 'none';
+                } else {
+                    if (noResults) noResults.classList.add('hidden');
+                    grid.style.display = 'grid';
+
+                    // Show filtered articles
+                    filteredArticles.forEach((article, index) => {
+                        article.element.style.display = 'block';
+                        article.element.style.animationDelay = `${index * 0.1}s`;
+                    });
+                }
+
+                updateResultsCount();
+            }
+
+            // Fixed the toggle view function
+            function toggleView(view) {
+                const gridBtn = document.getElementById('gridView4');
+                const listBtn = document.getElementById('listView4');
+                const grid = document.getElementById('articlesGrid4');
+
+                if (!gridBtn || !listBtn || !grid) return;
+
+                currentView = view;
+
+                if (view === 'grid') {
+                    // Grid view styling
+                    gridBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    gridBtn.classList.remove('text-gray-400');
+                    listBtn.classList.add('text-gray-400');
+                    listBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    // Grid layout
+                    grid.className = 'grid md:grid-cols-2 lg:grid-cols-3 gap-8';
+
+                    // Reset article cards to normal grid style
+                    const articleCards = grid.querySelectorAll('.article-card');
+                    articleCards.forEach(card => {
+                        card.className =
+                            'article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in';
+                    });
+
+                } else {
+                    // List view styling
+                    listBtn.classList.add('text-purple-600', 'bg-purple-100');
+                    listBtn.classList.remove('text-gray-400');
+                    gridBtn.classList.add('text-gray-400');
+                    gridBtn.classList.remove('text-purple-600', 'bg-purple-100');
+
+                    // List layout
+                    grid.className = 'grid grid-cols-1 gap-6';
+
+                    // Style article cards for list view
+                    const articleCards = grid.querySelectorAll('.article-card');
+                    articleCards.forEach(card => {
+                        card.className =
+                            'article-card card-hover bg-white rounded-lg shadow-lg overflow-hidden fade-in flex flex-col md:flex-row';
+
+                        // Adjust image for list view
+                        const img = card.querySelector('img');
+                        if (img) {
+                            img.className = 'w-full md:w-48 h-48 md:h-auto object-cover';
+                        }
+
+                        // Adjust content for list view
+                        const content = card.querySelector('.p-6');
+                        if (content) {
+                            content.className = 'p-6 flex-1';
+                        }
+                    });
+                }
+            }
+
+            function clearAllFilters() {
+                // Reset search
+                const searchInput = document.getElementById('search');
+                if (searchInput) searchInput.value = '';
+
+                // Reset sort
+                const sortSelect = document.getElementById('sort');
+                if (sortSelect) sortSelect.value = 'newest';
+
+                // Reset difficulty
+                const difficultySelect = document.getElementById('difficulty');
+                if (difficultySelect) difficultySelect.value = 'all';
+
+                // Reset tags
+                const tagButtons = document.querySelectorAll('.tag-filter');
+                tagButtons.forEach(btn => {
+                    btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+                if (tagButtons[0]) {
+                    tagButtons[0].classList.add('active', 'bg-purple-600', 'text-white');
+                    tagButtons[0].classList.remove('bg-gray-200', 'text-gray-700');
+                }
+
+                // Reset articles
+                filteredArticles = [...allArticles];
+                renderArticles();
+            }
+
+            function updateResultsCount() {
+                const resultCountEl = document.getElementById('resultCount');
+                const totalCountEl = document.getElementById('totalCount');
+                const articleCountEl = document.getElementById('articleCount');
+
+                if (resultCountEl) resultCountEl.textContent = filteredArticles.length;
+                if (totalCountEl) totalCountEl.textContent = allArticles.length;
+                if (articleCountEl) articleCountEl.textContent = `${allArticles.length} Articles`;
+            }
+
+            function showLoading() {
+                const loadingState = document.getElementById('loadingState');
+                const articlesGrid = document.getElementById('articlesGrid4');
+
+                if (loadingState) loadingState.classList.remove('hidden');
+                if (articlesGrid) articlesGrid.style.opacity = '0.5';
+            }
+
+            function hideLoading() {
+                const loadingState = document.getElementById('loadingState');
+                const articlesGrid = document.getElementById('articlesGrid4');
+
+                if (loadingState) loadingState.classList.add('hidden');
+                if (articlesGrid) articlesGrid.style.opacity = '1';
             }
 
             function debounce(func, wait) {
