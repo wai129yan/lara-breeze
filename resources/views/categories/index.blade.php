@@ -91,25 +91,7 @@
         </style>
     @endpush
 
-    <!-- Navigation -->
-    {{-- <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <a href="#" class="text-2xl font-bold text-gray-900">BlogSite</a>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Home</a>
-                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">Authors</a>
-                    <a href="#" class="text-purple-600 font-medium">Categories</a>
-                    <a href="#" class="text-gray-700 hover:text-gray-900 transition-colors">About</a>
-                </div>
-                <button class="md:hidden">
-                    <i class="fas fa-bars text-gray-700"></i>
-                </button>
-            </div>
-        </div>
-    </nav> --}}
+
 
     <!-- Breadcrumb -->
     <div class="bg-white border-b">
@@ -333,7 +315,7 @@
                                 <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Performance</span>
                             </div> --}}
 
-                            <div class="flex gap-2">
+                            {{-- <div class="flex gap-2">
                                 <a href="{{ route('categories.edit', $category->id) }}"
                                     class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
                                     <i class="fas fa-edit mr-1"></i> Edit
@@ -347,7 +329,7 @@
                                         <i class="fas fa-trash mr-1"></i> Delete
                                     </button>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                     </article>
                 @endforeach
@@ -456,7 +438,7 @@
                             </div>
 
 
-                            <div class="flex gap-2">
+                            {{-- <div class="flex gap-2">
                                 <a href="{{ route('categories.edit', $category->id) }}"
                                     class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
                                     <i class="fas fa-edit mr-1"></i> Edit
@@ -470,7 +452,7 @@
                                         <i class="fas fa-trash mr-1"></i> Delete
                                     </button>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                     </article>
                 @endforeach
@@ -578,7 +560,7 @@
                             </div>
 
 
-                            <div class="flex gap-2">
+                            {{-- <div class="flex gap-2">
                                 <a href="{{ route('categories.edit', $category->id) }}"
                                     class="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition">
                                     <i class="fas fa-edit mr-1"></i> Edit
@@ -592,7 +574,7 @@
                                         <i class="fas fa-trash mr-1"></i> Delete
                                     </button>
                                 </form>
-                            </div>
+                            </div> --}}
                         </div>
                     </article>
                 @endforeach

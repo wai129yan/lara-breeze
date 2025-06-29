@@ -93,60 +93,6 @@
                     </article>
                 @endforeach
 
-
-                {{-- <!-- Post 2 -->
-                <article class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1" alt="Article"
-                            class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-6">
-                        <a href="#"
-                            class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Travel</a>
-                        <h3 class="text-xl font-bold mb-2">
-                            <a href="#" class="hover:text-primary transition">Hidden Gems: 5 Underrated
-                                Destinations for
-                                Your Next Adventure</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">Escape the tourist crowds and discover these breathtaking
-                            locations that offer authentic experiences and unforgettable memories.</p>
-                        <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Author"
-                                class="w-8 h-8 rounded-full mr-2">
-                            <div>
-                                <p class="text-sm font-medium">Sophia Martinez</p>
-                                <p class="text-xs text-gray-500">May 8, 2023 · 7 min read</p>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
-                <!-- Post 3 -->
-                <article class="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                    <a href="#">
-                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd" alt="Article"
-                            class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-6">
-                        <a href="#"
-                            class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Food</a>
-                        <h3 class="text-xl font-bold mb-2">
-                            <a href="#" class="hover:text-primary transition">Plant-Based Revolution: Simple
-                                Recipes for
-                                Beginners</a>
-                        </h3>
-                        <p class="text-gray-600 mb-4">Explore the world of plant-based cooking with these easy,
-                            nutritious, and delicious recipes that will satisfy even the most dedicated meat-eaters.</p>
-                        <div class="flex items-center">
-                            <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Author"
-                                class="w-8 h-8 rounded-full mr-2">
-                            <div>
-                                <p class="text-sm font-medium">Marcus Johnson</p>
-                                <p class="text-xs text-gray-500">May 5, 2023 · 4 min read</p>
-                            </div>
-                        </div>
-                    </div>
-                </article> --}}
             </div>
         </section>
 

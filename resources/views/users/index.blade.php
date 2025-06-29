@@ -1,0 +1,574 @@
+@extends('layouts.app')
+@section('title', 'users')
+@section('content')
+    @push('style')
+        <style>
+            .gradient-bg {
+                background: linear-gradient(-45deg, #88ace1, #454446, #4a4b48, #f0d8db, #266696b8, #00f2fe);
+                background-size: 400% 400%;
+                animation: gradientShift 15s ease infinite;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .gradient-bg::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" style="stop-color:rgba(255,255,255,0.1)"/><stop offset="100%" style="stop-color:rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"><animate attributeName="cx" values="200;800;200" dur="20s" repeatCount="indefinite"/><animate attributeName="cy" values="200;600;200" dur="15s" repeatCount="indefinite"/></circle><circle cx="800" cy="300" r="150" fill="url(%23a)"><animate attributeName="cx" values="800;200;800" dur="25s" repeatCount="indefinite"/><animate attributeName="cy" values="300;700;300" dur="18s" repeatCount="indefinite"/></circle><circle cx="400" cy="600" r="80" fill="url(%23a)"><animate attributeName="cx" values="400;700;400" dur="22s" repeatCount="indefinite"/><animate attributeName="cy" values="600;200;600" dur="16s" repeatCount="indefinite"/></circle></svg>') no-repeat center center;
+                background-size: cover;
+                opacity: 0.3;
+                animation: float 20s ease-in-out infinite;
+            }
+
+            .gradient-bg::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(circle at 20% 80%, rgba(110, 110, 112, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(40, 39, 39, 0.39) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+                animation: pulse 8s ease-in-out infinite alternate;
+            }
+
+            @keyframes gradientShift {
+                0% {
+                    background-position: 0% 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0% 50%;
+                }
+            }
+
+            @keyframes float {
+
+                0%,
+                100% {
+                    transform: translateY(0px) rotate(0deg);
+                }
+
+                33% {
+                    transform: translateY(-30px) rotate(120deg);
+                }
+
+                66% {
+                    transform: translateY(-60px) rotate(240deg);
+                }
+            }
+
+            @keyframes pulse {
+                0% {
+                    opacity: 0.5;
+                    transform: scale(1);
+                }
+
+                100% {
+                    opacity: 0.8;
+                    transform: scale(1.1);
+                }
+            }
+
+            .hero-content {
+                position: relative;
+                z-index: 10;
+            }
+
+            .floating-shapes {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                z-index: 1;
+            }
+
+            .shape {
+                position: absolute;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                animation: floatUp 15s infinite linear;
+            }
+
+            .shape:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                left: 10%;
+                animation-delay: 0s;
+                animation-duration: 15s;
+            }
+
+            .shape:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                left: 20%;
+                animation-delay: 2s;
+                animation-duration: 18s;
+            }
+
+            .shape:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                left: 70%;
+                animation-delay: 4s;
+                animation-duration: 12s;
+            }
+
+            .shape:nth-child(4) {
+                width: 100px;
+                height: 100px;
+                left: 80%;
+                animation-delay: 6s;
+                animation-duration: 20s;
+            }
+
+            .shape:nth-child(5) {
+                width: 40px;
+                height: 40px;
+                left: 50%;
+                animation-delay: 8s;
+                animation-duration: 14s;
+            }
+
+            @keyframes floatUp {
+                0% {
+                    transform: translateY(100vh) rotate(0deg);
+                    opacity: 0;
+                }
+
+                10% {
+                    opacity: 1;
+                }
+
+                90% {
+                    opacity: 1;
+                }
+
+                100% {
+                    transform: translateY(-100px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+
+            .social-icon {
+                transition: all 0.3s ease;
+            }
+
+            .social-icon:hover {
+                transform: scale(1.1);
+            }
+
+            .author-image {
+                animation: profileFloat 6s ease-in-out infinite;
+                box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3), 0 0 0 8px rgba(255, 255, 255, 0.1);
+            }
+
+            @keyframes profileFloat {
+
+                0%,
+                100% {
+                    transform: translateY(0px);
+                }
+
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+        </style>
+    @endpush
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 relative">
+        <!-- Floating Shapes -->
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+
+        {{-- Most Post Users --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center hover:scale-105 transition-transform duration-300">
+                Most Post Authors
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($mostPostUser as $mostPost)
+                    <div
+                        class="group bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:shadow-xl cursor-pointer">
+
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <img src="/placeholder.svg?height=150&width=150" alt="{{ $mostPost->name ?? 'Author' }}"
+                                    class="w-12 h-12 rounded-full mr-4 transition-all duration-300 group-hover:rotate-12 group-hover:shadow-lg">
+
+                                <div>
+
+                                    <h3
+                                        class="text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-purple-600 group-hover:underline">
+                                        <a href="{{ route('users.show', $mostPost->id) }}" class="hover:text-purple-800">
+                                            {{ $mostPost->name ?? 'Author Name' }}
+                                        </a>
+                                    </h3>
+                                    <p
+                                        class="text-sm text-gray-600 transition-all duration-300 group-hover:text-purple-500 group-hover:font-medium">
+                                        {{-- {{ Str::limit($mostPost->bio ?? 'Author Name', 100) }} --}}
+                                        {{ generateExcerpt($mostPost->bio, 100) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h2
+                                class="text-xl font-bold text-gray-900 mb-3 transition-all duration-300 group-hover:text-purple-600 group-hover:tracking-wider">
+                                {{ $mostPost->post }}
+                            </h2>
+
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex space-x-3">
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-400 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-700 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-gray-900 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+
+                                <button
+                                    class="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:bg-purple-700 group-hover:shadow-lg group-hover:scale-105 group-hover:tracking-wider">
+                                    Follow
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- mostFollowerUser --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 m-5">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center hover:scale-105 transition-transform duration-300">
+                Most Follower Authors
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($mostFollowerUser as $mostFollower)
+                    <div
+                        class="group bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:shadow-xl cursor-pointer">
+
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <img src="/placeholder.svg?height=150&width=150" alt="{{ $mostFollower->name ?? 'Author' }}"
+                                    class="w-12 h-12 rounded-full mr-4 transition-all duration-300 group-hover:rotate-12 group-hover:shadow-lg">
+
+                                <div>
+                                    <h3
+                                        class="text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-purple-600 group-hover:underline">
+                                        {{ $mostPost->name ?? 'Author Name' }}
+                                    </h3>
+                                    <p
+                                        class="text-sm text-gray-600 transition-all duration-300 group-hover:text-purple-500 group-hover:font-medium">
+
+                                        {{ generateExcerpt($mostFollower->bio, 100) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h2
+                                class="text-xl font-bold text-gray-900 mb-3 transition-all duration-300 group-hover:text-purple-600 group-hover:tracking-wider">
+                                {{ $mostPost->post }}
+                            </h2>
+
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex space-x-3">
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-400 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-700 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-gray-900 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+
+                                <button
+                                    class="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:bg-purple-700 group-hover:shadow-lg group-hover:scale-105 group-hover:tracking-wider">
+                                    Follow
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- mostClapUser --}}
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 m-5">
+            <h2 class="text-3xl font-bold text-white mb-8 text-center hover:scale-105 transition-transform duration-300">
+                Most Clap Authors
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($mostClapUser as $mostClap)
+                    <div
+                        class="group bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:shadow-xl cursor-pointer">
+
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <img src="/placeholder.svg?height=150&width=150" alt="{{ $mostClap->name ?? 'Author' }}"
+                                    class="w-12 h-12 rounded-full mr-4 transition-all duration-300 group-hover:rotate-12 group-hover:shadow-lg">
+
+                                <div>
+                                    <h3
+                                        class="text-lg font-semibold text-gray-900 transition-all duration-300 group-hover:text-purple-600 group-hover:underline">
+                                        {{ $mostClap->name ?? 'Author Name' }}
+                                    </h3>
+                                    <p
+                                        class="text-sm text-gray-600 transition-all duration-300 group-hover:text-purple-500 group-hover:font-medium">
+
+                                        {{ generateExcerpt($mostClap->bio, 80) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h2
+                                class="text-xl font-bold text-gray-900 mb-3 transition-all duration-300 group-hover:text-purple-600 group-hover:tracking-wider">
+                                {{ $mostPost->post }}
+                            </h2>
+
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex space-x-3">
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-400 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-blue-700 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
+                                    <a href="#"
+                                        class="text-gray-600 transition-all duration-300 group-hover:text-gray-900 hover:scale-125 hover:rotate-6">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </div>
+
+                                <button
+                                    class="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 group-hover:bg-purple-700 group-hover:shadow-lg group-hover:scale-105 group-hover:tracking-wider">
+                                    Follow
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Stats Section -->
+    {{-- <section class="bg-white py-12 -mt-10 relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">127</div>
+                        <div class="text-gray-600">Articles</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">45K</div>
+                        <div class="text-gray-600">Followers</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">892K</div>
+                        <div class="text-gray-600">Views</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">4.8</div>
+                        <div class="text-gray-600">Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> --}}
+
+    @push('scripts')
+        <script>
+            // Follow button functionality
+            const followBtn = document.getElementById('followBtn');
+            let isFollowing = false;
+
+            followBtn.addEventListener('click', function() {
+                if (isFollowing) {
+                    this.innerHTML = '<i class="fas fa-plus mr-2"></i>Follow';
+                    this.classList.remove('bg-purple-100', 'text-purple-600');
+                    this.classList.add('bg-white', 'text-purple-600');
+                    isFollowing = false;
+                } else {
+                    this.innerHTML = '<i class="fas fa-check mr-2"></i>Following';
+                    this.classList.remove('bg-white', 'text-purple-600');
+                    this.classList.add('bg-purple-100', 'text-purple-600');
+                    isFollowing = true;
+                }
+            });
+
+            // Filter functionality
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const postCards = document.querySelectorAll('.post-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-purple-600', 'text-white');
+                        b.classList.add('bg-white', 'text-gray-700');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.add('active', 'bg-purple-600', 'text-white');
+                    this.classList.remove('bg-white', 'text-gray-700');
+
+                    const filter = this.getAttribute('data-filter');
+
+                    // Filter posts
+                    postCards.forEach(card => {
+                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 100);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+
+            // Newsletter form
+            const newsletterForm = document.getElementById('newsletterForm');
+            newsletterForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = this.querySelector('input[type="email"]').value;
+                if (email) {
+                    alert('Thank you for subscribing! You\'ll receive Sarah\'s latest articles in your inbox.');
+                    this.reset();
+                }
+            });
+
+            // Load more functionality
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            loadMoreBtn.addEventListener('click', function() {
+                // Simulate loading more posts
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    alert('More articles loaded! (This is a demo)');
+                    this.innerHTML = 'Load More Articles';
+                    this.disabled = false;
+                }, 2000);
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Add scroll effect to navigation
+            window.addEventListener('scroll', function() {
+                const nav = document.querySelector('nav');
+                if (window.scrollY > 100) {
+                    nav.classList.add('shadow-lg');
+                } else {
+                    nav.classList.remove('shadow-lg');
+                }
+            });
+
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.5,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const stats = entry.target.querySelectorAll('.text-3xl');
+                        stats.forEach(stat => {
+                            const finalValue = parseInt(stat.textContent.replace(/[^\d]/g, ''));
+                            animateValue(stat, 0, finalValue, 2000);
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const statsSection = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
+            if (statsSection) {
+                observer.observe(statsSection);
+            }
+
+            function animateValue(element, start, end, duration) {
+                const range = end - start;
+                const increment = range / (duration / 16);
+                let current = start;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= end) {
+                        current = end;
+                        clearInterval(timer);
+                    }
+                    const suffix = element.textContent.replace(/[\d.]/g, '');
+                    element.textContent = Math.floor(current) + suffix;
+                }, 16);
+            }
+        </script>
+    @endpush
+
+
+
+@endsection
