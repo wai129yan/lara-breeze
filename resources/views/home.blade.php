@@ -52,7 +52,7 @@
         </section>
 
         <!-- Latest Posts -->
-        <h1>{{ hello() }}</h1>
+        {{-- <h1>{{ hello() }}</h1> --}}
         <section class="mb-12">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Latest Articles</h2>
