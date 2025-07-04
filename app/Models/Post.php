@@ -65,8 +65,25 @@ class Post extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function views()
+    {
+        return $this->hasMany(PostView::class, 'post_id', 'id');
+    }
+
     // public function comments(): HasMany
     // {
     //     return $this->hasMany(Comment::class)->whereNull('parent_id');  // Only top-level comments
     // }
 }
+
+
+
+
+
+
+
+
+
+
+
+

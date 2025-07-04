@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -16,6 +17,20 @@ class UserController extends Controller
         // return $users;
         // most follower user list
         $users = User::all();
+
+       $topViewedUsers = User::select(
+        'users.id',
+        'users.name',
+        'users.email',
+        DB::raw('COUNT(post_views.view_id) as total_post_views')
+    )
+        ->join('posts', 'users.id', '=', 'posts.user_id')
+        ->join('post_views', 'posts.id', '=', 'post_views.post_id')
+        ->groupBy('users.id', 'users.name', 'users.email')
+        ->orderByDesc('total_post_views')
+        ->limit(5)
+        ->get();
+        // return $topViewedUsers;
         // Most followed users
         $mostFollowerUser = User::withCount('followers')
             ->having('followers_count', '>', 0)  // Only users with followers
@@ -30,7 +45,7 @@ class UserController extends Controller
             ->orderBy('posts_count', 'desc')
             ->limit(6)
             ->get();
-        // return $mostPostUser;
+        // dd($mostPostUser);
         // Most clapped users (assuming you want claps received)
         $mostClapUser = User::withCount('receivedClaps')
             ->having('received_claps_count', '>', 0)
@@ -38,7 +53,7 @@ class UserController extends Controller
             ->limit(4)
             ->get();
         // return $mostClapUser;
-        return view('users.index', compact('users', 'mostFollowerUser', 'mostPostUser', 'mostClapUser'));
+        return view('users.index', compact('users', 'mostFollowerUser', 'mostPostUser', 'mostClapUser', 'topViewedUsers'));
     }
 
     /**

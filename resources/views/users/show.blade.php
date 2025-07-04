@@ -214,6 +214,7 @@
                     class="author-image w-32 h-32 rounded-full mx-auto mb-6 border-4 border-white">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ $user->name }}</h1>
                 <p class="text-xl md:text-2xl text-purple-100 mb-6">{{ $user->bio }}</p>
+
                 <div class="flex justify-center space-x-6 mb-8">
                     <a href="#" class="social-icon text-white hover:text-purple-200">
                         <i class="fab fa-twitter text-2xl"></i>
@@ -242,25 +243,31 @@
             <div class="bg-white rounded-lg shadow-lg p-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                     <div>
-                        <div class="text-3xl font-bold text-gray-900 mb-2">127</div>
-                        <div class="text-gray-600">Articles</div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $user->posts_count }}</div>
+                        <div class="text-gray-600">Post</div>
                     </div>
                     <div>
-                        <div class="text-3xl font-bold text-gray-900 mb-2">45K</div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $user->followers_count }}</div>
                         <div class="text-gray-600">Followers</div>
                     </div>
-                    <div>
-                        <div class="text-3xl font-bold text-gray-900 mb-2">892K</div>
-                        <div class="text-gray-600">Views</div>
+
+                    {{-- ✅ Fix: use $topUser instead of $user --}}
+                   <div>
+                    <div class="text-3xl font-bold text-gray-900 mb-2">
+                        {{ isset($topViewedUsers) && $topViewedUsers->isNotEmpty() ? $topViewedUsers->first()->total_post_views : 0 }}
                     </div>
+                    <div class="text-gray-600">Most Views</div>
+                </div>
+
                     <div>
-                        <div class="text-3xl font-bold text-gray-900 mb-2">4.8</div>
-                        <div class="text-gray-600">Rating</div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">{{ $user->received_claps_count }}</div>
+                        <div class="text-gray-600">Claps</div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- About Section -->
     <section class="py-16">
@@ -269,10 +276,7 @@
                 <h2 class="text-3xl font-bold text-gray-900 mb-6">About {{ $user->name }}</h2>
                 <div class="prose prose-lg max-w-none text-gray-700">
                     <p class="mb-4">
-                        Sarah is a passionate tech writer and digital nomad with over 8 years of experience in the
-                        technology industry.
-                        She specializes in making complex technical concepts accessible to everyone, from beginners to
-                        seasoned professionals.
+                        {{ $user->bio }}
                     </p>
                     <p class="mb-4">
                         Currently traveling the world while working remotely, Sarah shares her insights on web
@@ -315,12 +319,15 @@
 
             <!-- Filter Buttons -->
             <div class="flex flex-wrap justify-center gap-4 mb-12">
-                <button
-                    class="filter-btn active bg-purple-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
-                    data-filter="all">
-                    All Posts
-                </button>
-                <button
+
+                @foreach ($user->posts as $post)
+                    <button
+                        class="filter-btn active bg-purple-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
+                        data-filter="all">
+                        {{ $post->category->name ?? 'All' }}
+                    </button>
+                @endforeach
+                {{-- <button
                     class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition-colors"
                     data-filter="javascript">
                     JavaScript
@@ -339,12 +346,45 @@
                     class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full font-medium hover:bg-gray-100 transition-colors"
                     data-filter="lifestyle">
                     Lifestyle
-                </button>
+                </button> --}}
             </div>
 
             <!-- Blog Posts Grid -->
             <div id="postsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Post 1 -->
+
+                @foreach ($user->posts as $post)
+                    <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden"
+                        data-category="react">
+                        <img src="/placeholder.svg?height=200&width=400" alt="React Performance"
+                            class="w-full h-48 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center mb-3">
+                                <span
+                                    class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">{{ Str::limit($post->title, 12) }}</span>
+                                <span
+                                    class="text-gray-500 text-sm ml-auto">{{ $post->created_at->diffForHumans() }}</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-3 hover:text-purple-600 transition-colors">
+                                <a href="#">{{ Str::limit($post->subtitle, 50) }}</a>
+                            </h3>
+                            <p class="text-gray-600 mb-4">
+                                {{ Str::limit($post->content, 100) }}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-gray-500 text-sm">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                    <span>{{ $user->posts_count }}</span>
+                                </div>
+                                <div class="flex items-center text-gray-500 text-sm">
+                                    <i class="fa-regular fa-thumbs-up"></i>
+                                    <span>{{ $user->received_claps_count }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+
+                {{-- <!-- Post 1 -->
                 <article class="post-card card-hover bg-white rounded-lg shadow-lg overflow-hidden"
                     data-category="javascript">
                     <img src="/placeholder.svg?height=200&width=400" alt="JavaScript ES2024"
@@ -511,7 +551,7 @@
                             </div>
                         </div>
                     </div>
-                </article>
+                </article> --}}
             </div>
 
             <!-- Load More Button -->
