@@ -13,7 +13,7 @@
 
               <!-- Navigation -->
               <nav class="hidden md:flex space-x-8">
-                  <a href="{{route('home')}}" class="text-gray-900 hover:text-primary font-medium transition">Home</a>
+                  <a href="{{ route('home') }}" class="text-gray-900 hover:text-primary font-medium transition">Home</a>
                   <a href="{{ route('categories.index') }}"
                       class="text-gray-600 hover:text-primary font-medium transition">Categories</a>
                   <a href="#" class="text-gray-600 hover:text-primary font-medium transition">Popular</a>
@@ -49,7 +49,7 @@
                           </svg>
                       </a>
                       <div
-                          class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg  group-hover:block">
+                          class="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg  hidden group-hover:block group-focus-within:block">
                           @if (Route::has('login'))
                               {{-- <nav class="flex items-center justify-end gap-4"> --}}
                               @auth

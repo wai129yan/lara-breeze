@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create 100 Article Data Entries</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-reserved {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-reserved:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-generate {
+            background-color: #28a745;
+            font-size: 16px;
+            padding: 12px 30px;
+        }
+
+        .btn-generate:hover {
+            background-color: #218838;
+        }
+
+        .btn-export:hover {
+            background-color: #138496;
+        }
+
+        .article-number {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .summary {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .date-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-row .form-group {
+            flex: 1;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .article-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Create 100 Article Data Entries</h1>
+
+        <div class="controls">
+            <button type="button" class="btn-generate" onclick="generateForms()">Generate 100 Article Forms</button>
+            <button type="button" class="btn-reserved" onclick="saveAllToReserved()">保留に保存 (Save All to
+                Reserved)</button>
+
+        </div>
+
+        <div class="article-container" id="articleFormsContainer"></div>
+
+        <div id="summarySection" style="display: none;" class="summary">
+            <!-- <h3>📊 Summary</h3> -->
+            <p><strong>Total Articles Created:</strong> <span id="totalArticles">0</span></p>
+            <p><strong>Articles Saved:</strong> <span id="savedArticles">0</span></p>
+            <p><strong>Reserved Articles:</strong> <span id="reservedArticles">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        let articleData = [];
+
+        function generateForms() {
+            const container = document.getElementById('articleFormsContainer');
+            container.innerHTML = '';
+            articleData = [];
+
+            for (let i = 1; i <= 100; i++) {
+                const articleForm = createArticleForm(i);
+                container.appendChild(articleForm);
+            }
+
+            updateSummary();
+        }
+
+        function createArticleForm(number) {
+            const formDiv = document.createElement('div');
+            formDiv.className = 'form-section';
+            formDiv.innerHTML = `
+                <div class="article-number">Article ${number}</div>
+                <div class="form-group">
+                    <label for="article_${number}">Article Title:</label>
+                    <input type="text" id="article_${number}" name="article_${number}"
+                           placeholder="Enter article ${number} title"
+                           onchange="updateArticleData(${number})">
+                </div>
+                <div class="form-group">
+                    <label for="content_${number}">Main Content:</label>
+                    <textarea id="content_${number}" name="content_${number}"
+                              placeholder="Enter main content for article ${number}"
+                              onchange="updateArticleData(${number})"></textarea>
+                </div>
+                <div class="date-row">
+                    <div class="form-group">
+                        <label for="startDate_${number}">Release Start Date & Time:</label>
+                        <input type="datetime-local" id="startDate_${number}" name="startDate_${number}"
+                               value="${getVariedStartDate(number)}"
+                               onchange="updateArticleData(${number})">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate_${number}">Release End Date & Time:</label>
+                        <input type="datetime-local" id="endDate_${number}" name="endDate_${number}"
+                               value="${getVariedEndDate(number)}"
+                               onchange="updateArticleData(${number})">
+                    </div>
+                </div>
+                <div class="button-row">
+                    <button type="button" onclick="saveArticle(${number})">Save Article ${number}</button>
+                    <button type="button" class="btn-reserved" onclick="saveToReserved(${number})">保留に保存</button>
+                </div>
+            `;
+
+            // Initialize article data
+            articleData[number - 1] = {
+                id: number,
+                title: '',
+                content: '',
+                releaseStartDate: getVariedStartDate(number),
+                releaseEndDate: getVariedEndDate(number),
+                isSaved: false,
+                isReserved: false
+            };
+
+            return formDiv;
+        }
+
+        function getVariedStartDate(number) {
+            const baseDate = new Date();
+            const hoursToAdd = number * 2; // Each article is 2 hours apart
+            const minutesToAdd = (number * 15) % 60; // Add varying minutes
+
+            const variedDate = new Date(baseDate.getTime() + (hoursToAdd * 60 * 60 * 1000) + (minutesToAdd * 60 * 1000));
+            return formatDateForInput(variedDate);
+        }
+
+        function getVariedEndDate(number) {
+            const baseDate = new Date();
+            const startHours = number * 2;
+            const startMinutes = (number * 15) % 60;
+            const durationHours = 3 + (number % 6); // Duration between 3-8 hours
+
+            const variedEndDate = new Date(baseDate.getTime() +
+                (startHours * 60 * 60 * 1000) +
+                (startMinutes * 60 * 1000) +
+                (durationHours * 60 * 60 * 1000));
+
+            return formatDateForInput(variedEndDate);
+        }
+
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function updateArticleData(number) {
+            const index = number - 1;
+            if (articleData[index]) {
+                articleData[index].title = document.getElementById(`article_${number}`).value;
+                articleData[index].content = document.getElementById(`content_${number}`).value;
+                articleData[index].releaseStartDate = document.getElementById(`startDate_${number}`).value;
+                articleData[index].releaseEndDate = document.getElementById(`endDate_${number}`).value;
+            }
+        }
+
+        // function saveArticle(number) {
+        //     updateArticleData(number);
+        //     const article = articleData[number - 1];
+
+        //     if (!article.title || !article.content) {
+        //         alert(`Please fill in Article Title and Main Content for Article ${number}`);
+        //         return;
+        //     }
+
+        //     // Validate dates
+        //     const startDate = new Date(article.releaseStartDate);
+        //     const endDate = new Date(article.releaseEndDate);
+
+        //     if (startDate >= endDate) {
+        //         alert(`End date must be after start date for Article ${number}`);
+        //         return;
+        //     }
+
+        //     // Mark as saved
+        //     article.isSaved = true;
+        //     article.isReserved = false;
+
+        //     // Save to localStorage
+        //     saveToLocalStorage();
+        //     alert(`Article ${number} saved successfully!`);
+        //     updateSummary();
+        // }
+
+        function saveArticle(number) {
+            const data = {
+                id: number,
+                title: document.getElementById(`article_${number}`).value,
+                content: document.getElementById(`content_${number}`).value,
+                releaseStartDate: document.getElementById(`startDate_${number}`).value,
+                releaseEndDate: document.getElementById(`endDate_${number}`).value,
+                isReserved: false
+            };
+
+            fetch('save_article.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(resp => resp.json())
+                .then(response => {
+                    if (response.success) {
+                        alert(`Article ${number} saved successfully.`);
+                    } else {
+                        alert(`Failed to save Article ${number}: ${response.error}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving article:', error);
+                    alert(`Error occurred while saving Article ${number}`);
+                });
+        }
+
+        function saveToReserved(number) {
+            updateArticleData(number);
+            const article = articleData[number - 1];
+
+            if (!article.title || !article.content) {
+                alert(`Please fill in Article Title and Main Content for Article ${number}`);
+                return;
+            }
+
+            // Validate dates
+            const startDate = new Date(article.releaseStartDate);
+            const endDate = new Date(article.releaseEndDate);
+
+            if (startDate >= endDate) {
+                alert(`End date must be after start date for Article ${number}`);
+                return;
+            }
+
+            // Mark as reserved
+            article.isReserved = true;
+            article.isSaved = true;
+
+            // Save to localStorage
+            saveToLocalStorage();
+            alert(`Article ${number} saved to reserved (保留に保存)!`);
+            updateSummary();
+        }
+
+        function saveAllToReserved() {
+            let savedCount = 0;
+            let errorCount = 0;
+
+            for (let i = 1; i <= 100; i++) {
+                updateArticleData(i);
+                const article = articleData[i - 1];
+
+                if (article.title && article.content) {
+                    const startDate = new Date(article.releaseStartDate);
+                    const endDate = new Date(article.releaseEndDate);
+
+                    if (startDate < endDate) {
+                        article.isReserved = true;
+                        article.isSaved = true;
+                        savedCount++;
+                    } else {
+                        errorCount++;
+                    }
+                }
+            }
+
+            // Save all to localStorage
+            saveToLocalStorage();
+
+            if (errorCount > 0) {
+                alert(`${savedCount} articles saved to reserved (保留に保存).\n${errorCount} articles have date/content errors.`);
+            } else {
+                alert(`${savedCount} articles saved to reserved (保留に保存)!`);
+            }
+
+            updateSummary();
+        }
+
+        function saveToLocalStorage() {
+            const savedArticles = articleData.filter(a => a.isSaved);
+            localStorage.setItem('savedArticles', JSON.stringify(savedArticles));
+        }
+
+
+
+        function generateCSV() {
+            let csv = 'Article Number,Title,Content,Release Start Date,Release End Date,Reserved Status\n';
+
+            articleData.forEach(article => {
+                const title = `"${article.title.replace(/"/g, '""')}"`;
+                const content = `"${article.content.replace(/"/g, '""')}"`;
+                const startDate = article.releaseStartDate;
+                const endDate = article.releaseEndDate;
+                const reserved = article.isReserved ? 'Yes' : 'No';
+
+                csv += `${article.id},${title},${content},${startDate},${endDate},${reserved}\n`;
+            });
+
+            return csv;
+        }
+
+        function updateSummary() {
+            const summarySection = document.getElementById('summarySection');
+            const totalArticles = document.getElementById('totalArticles');
+            const savedArticles = document.getElementById('savedArticles');
+            const reservedArticles = document.getElementById('reservedArticles');
+
+            const saved = articleData.filter(a => a.isSaved).length;
+            const reserved = articleData.filter(a => a.isReserved).length;
+
+            totalArticles.textContent = articleData.length;
+            savedArticles.textContent = saved;
+            reservedArticles.textContent = reserved;
+
+            summarySection.style.display = 'block';
+        }
+
+        // Load saved data on page load
+        window.addEventListener('load', function () {
+            const savedArticles = localStorage.getItem('savedArticles');
+            if (savedArticles) {
+                console.log(`Found ${JSON.parse(savedArticles).length} saved articles`);
+            }
+        });
+    </script>
+</body>
+
+</html>
