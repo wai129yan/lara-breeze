@@ -25,6 +25,8 @@ class PostFactory extends Factory
             'subtitle' => $this->faker->sentence(10, true),
             'slug' => $this->faker->unique()->slug(),
             'content' => $this->faker->paragraphs(3, true),
+            'featured_image' => $this->faker->imageUrl(),
+            'view_counts' => $this->faker->numberBetween(0, 1000),
             'status' => $this->faker->randomElement(['draft', 'published']),
             'published_at' => $this->faker->dateTimeThisYear(),
             'created_at' => now(),

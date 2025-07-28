@@ -13,6 +13,13 @@ return new class extends Migration {
         Schema::create('post_tags', function (Blueprint $table) {
             $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->foreignId('tag_id')->constrained()->onDelete('cascade');
+            // Ensure unique combinations
+            $table->unique(['post_id', 'tag_id']);
+
+            // Add indexes for better performance
+            $table->index(['post_id']);
+            $table->index(['tag_id']);
+            $table->timestamps();
             // $table->primary(['post_id', 'tag_id']);
         });
     }

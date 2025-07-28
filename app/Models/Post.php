@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 
@@ -70,20 +71,30 @@ class Post extends Model
         return $this->hasMany(PostView::class, 'post_id', 'id');
     }
 
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Tag::class,
+            'post_tags',  // pivot table name
+            'post_id',  // foreign key for current model
+            'tag_id'  // foreign key for related model
+        )->withTimestamps();  // include created_at and updated_at from pivot table
+    }
+
+    public function tagName()
+    {
+        // return $this->tags;
+        // return $this->tags()->pluck('name')->implode(', ');
+        return $this->tags()->pluck('name');
+    }
+
+    public function clapCounts()
+    {
+        return $this->hasMany(Clap::class)->sum('clap_count');
+    }
+
     // public function comments(): HasMany
     // {
     //     return $this->hasMany(Comment::class)->whereNull('parent_id');  // Only top-level comments
     // }
 }
-
-
-
-
-
-
-
-
-
-
-
-

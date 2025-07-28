@@ -29,6 +29,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Route::get('/test', function () {
+//     $post = Post::find(1);
+//     $tg = $post->tags;
+//     return $tg;
+//     // return $tg[0]->pivot->post_id;
+// });
+
 Route::resource('users', UserController::class);
 Route::resource('tags', TagController::class);
 Route::resource('posts', PostController::class);

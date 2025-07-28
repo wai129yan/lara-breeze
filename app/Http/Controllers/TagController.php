@@ -13,11 +13,7 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'List Semua Tag',
-            'data' => $tags
-        ]);
+        return view('tags.index', compact('tags'));
     }
 
     /**

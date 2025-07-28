@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -42,14 +43,23 @@ class PostController extends Controller
             $data['featured_image'] = $request->file('featured_image')->store('images/posts', 'public');
         }
 
-        Post::create($data);
+        $post = Post::create($data);
+        // Create tags
+        $tag1 = Tag::create(['name' => 'Laravel', 'slug' => 'laravel']);
+        $tag2 = Tag::create(['name' => 'PHP', 'slug' => 'php']);
+
+        // Attach tags to post
+        $post->tags()->attach([$tag1->id, $tag2->id]);
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully.');
     }
 
     public function show(Post $post)
     {
+        // return $post;
+        $post->load('tags');
         return view('posts.show', compact('post'));
+        // return response()->json($post);
     }
 
     public function edit(Post $post)

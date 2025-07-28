@@ -18,7 +18,9 @@ return new class extends Migration {
             $table->string('featured_image')->nullable();
             $table->string('subtitle')->nullable();
             $table->string('slug')->unique();
+
             $table->text('content')->nullable();
+            $table->integer('view_counts')->default(0);
             $table->enum('status', ['draft', 'published'])->default('draft');
             $table->dateTime('published_at')->nullable();
             $table->timestamps();
