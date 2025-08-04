@@ -4,7 +4,7 @@
     @push('style')
         <style>
             body {
-                background: #a17979;
+                background: #f8f9fa;
             }
 
             .reading-progress {
@@ -58,10 +58,10 @@
             }
 
             /* .social-share.hidden {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        pointer-events: none;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        transform: translateY(-50%) translateX(-100%);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    } */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity: 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                pointer-events: none;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateY(-50%) translateX(-100%);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } */
 
             .highlight-selection {
                 background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
@@ -283,6 +283,29 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
+                    <div class="flex gap-2">
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('posts.show', $post->slug)) }}&text={{ urlencode($post->title) }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-400 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                            target="_blank">
+                            <i class="fab fa-twitter mr-2"></i>
+                            Share on Twitter
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            target="_blank">
+                            <i class="fab fa-facebook-f mr-2"></i>
+                            Share on Facebook
+                        </a>
+                        <a href="https://wa.me/?text={{ urlencode($post->title . ' ' . url()->current()) }}"
+                            class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                            target="_blank">
+                            <i class="fab fa-whatsapp mr-2"></i>
+                            Share on WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
                     <button id="likeBtn"
                         class="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors">
                         <i class="fa-solid fa-hands-clapping"></i>
@@ -335,224 +358,296 @@
 
     @push('script')
         <script>
-            // Reading progress bar
-            function updateReadingProgress() {
-                const article = document.querySelector('.article-content');
-                const scrollTop = window.pageYOffset;
-                const docHeight = article.offsetHeight;
-                const winHeight = window.innerHeight;
-                const scrollPercent = scrollTop / (docHeight - winHeight);
-                const scrollPercentRounded = Math.round(scrollPercent * 100);
+            // UI Controller Module
+            const UIController = {
+                elements: {
+                    article: document.querySelector('.article-content'),
+                    readingProgress: document.querySelector('.reading-progress'),
+                    sections: document.querySelectorAll('section[id]'),
+                    tocLinks: document.querySelectorAll('.toc-link'),
+                    floatingToc: document.querySelector('.floating-toc'),
+                    socialShare: document.querySelector('.social-share'),
+                    copyButtons: document.querySelectorAll('.copy-button'),
+                    likeBtn: document.getElementById('likeBtn'),
+                    bookmarkBtn: document.getElementById('bookmarkBtn'),
+                    zoomImages: document.querySelectorAll('.zoom-image'),
+                    imageModal: document.getElementById('imageModal'),
+                    closeModal: document.getElementById('closeModal'),
+                    commentForm: document.getElementById('commentForm')
+                },
 
-                document.querySelector('.reading-progress').style.width = Math.min(scrollPercentRounded, 100) + '%';
-            }
+                updateReadingProgress() {
+                    try {
+                        const { article, readingProgress } = this.elements;
+                        if (!article || !readingProgress) return;
 
-            // Table of contents active link
-            function updateTOC() {
-                const sections = document.querySelectorAll('section[id]');
-                const tocLinks = document.querySelectorAll('.toc-link');
+                        const scrollTop = window.pageYOffset;
+                        const docHeight = article.offsetHeight;
+                        const winHeight = window.innerHeight;
+                        const scrollPercent = scrollTop / (docHeight - winHeight);
+                        const scrollPercentRounded = Math.round(scrollPercent * 100);
 
-                let current = '';
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    const sectionHeight = section.clientHeight;
-                    if (window.pageYOffset >= sectionTop - 200) {
-                        current = section.getAttribute('id');
+                        readingProgress.style.width = Math.min(scrollPercentRounded, 100) + '%';
+                    } catch (error) {
+                        console.error('Error updating reading progress:', error);
                     }
-                });
+                },
 
-                tocLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === '#' + current) {
-                        link.classList.add('active');
+                updateTOC() {
+                    try {
+                        const { sections, tocLinks } = this.elements;
+                        if (!sections.length || !tocLinks.length) return;
+
+                        let current = '';
+                        sections.forEach(section => {
+                            const sectionTop = section.offsetTop;
+                            if (window.pageYOffset >= sectionTop - 200) {
+                                current = section.getAttribute('id');
+                            }
+                        });
+
+                        tocLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + current) {
+                                link.classList.add('active');
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error updating TOC:', error);
                     }
-                });
-            }
+                },
 
-            // Show/hide floating elements
-            function toggleFloatingElements() {
-                const toc = document.querySelector('.floating-toc');
-                const socialShare = document.querySelector('.social-share');
-                const scrollY = window.pageYOffset;
+                toggleFloatingElements() {
+                    try {
+                        const { floatingToc, socialShare } = this.elements;
+                        if (!floatingToc || !socialShare) return;
 
-                if (scrollY > 500) {
-                    toc.classList.remove('hidden');
-                    socialShare.classList.remove('hidden');
-                } else {
-                    toc.classList.add('hidden');
-                    socialShare.classList.add('hidden');
-                }
-            }
+                        const scrollY = window.pageYOffset;
+                        const shouldShow = scrollY > 500;
 
-            // Scroll event listener
-            window.addEventListener('scroll', () => {
-                updateReadingProgress();
-                updateTOC();
-                toggleFloatingElements();
-            });
+                        floatingToc.classList.toggle('hidden', !shouldShow);
+                        socialShare.classList.toggle('hidden', !shouldShow);
+                    } catch (error) {
+                        console.error('Error toggling floating elements:', error);
+                    }
+                },
 
-            // Copy code functionality
-            document.querySelectorAll('.copy-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const codeBlock = button.parentElement.querySelector('code');
-                    const text = codeBlock.textContent;
+                showToast(message, type = 'info') {
+                    const toast = document.createElement('div');
+                    const bgColor = type === 'error' ? 'bg-red-500' : 'bg-gray-900';
+                    toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300`;
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
 
-                    navigator.clipboard.writeText(text).then(() => {
-                        button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
-                        setTimeout(() => {
-                            button.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
-                        }, 2000);
+                    requestAnimationFrame(() => {
+                        toast.classList.remove('translate-y-full', 'opacity-0');
                     });
-                });
-            });
 
-            // Social sharing
-            document.querySelectorAll('.social-btn').forEach(button => {
-                button.addEventListener('click', () => {
-                    const platform = button.dataset.platform;
-                    const url = window.location.href;
-                    const title = document.title;
-
-                    let shareUrl = '';
-                    switch (platform) {
-                        case 'twitter':
-                            shareUrl =
-                                `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
-                            break;
-                        case 'facebook':
-                            shareUrl =
-                                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-                            break;
-                        case 'linkedin':
-                            shareUrl =
-                                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-                            break;
-                        case 'whatsapp':
-                            shareUrl = `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`;
-                            break;
-                        case 'copy':
-                            navigator.clipboard.writeText(url).then(() => {
-                                button.innerHTML = '<i class="fas fa-check text-xl"></i>';
-                                setTimeout(() => {
-                                    button.innerHTML = '<i class="fas fa-link text-xl"></i>';
-                                }, 2000);
-                            });
-                            return;
-                    }
-
-                    if (shareUrl) {
-                        window.open(shareUrl, '_blank', 'width=600,height=400');
-                    }
-                });
-            });
-
-            // Bookmark functionality
-            document.getElementById('bookmarkBtn').addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    this.classList.add('text-purple-600');
-                    // Show toast notification
-                    showToast('Article bookmarked!');
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                    this.classList.remove('text-purple-600');
-                    showToast('Bookmark removed');
-                }
-            });
-
-            // Like functionality
-            document.getElementById('likeBtn').addEventListener('click', function() {
-                const icon = this.querySelector('i');
-                const countSpan = document.getElementById('likeCount');
-                let count = parseInt(countSpan.textContent);
-
-                if (icon.classList.contains('far')) {
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
-                    this.classList.add('text-red-500');
-                    countSpan.textContent = count + 1;
-                    showToast('Thanks for liking!');
-                } else {
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
-                    this.classList.remove('text-red-500');
-                    countSpan.textContent = count - 1;
-                }
-            });
-
-            // Image zoom functionality
-            document.querySelectorAll('.zoom-image').forEach(img => {
-                img.addEventListener('click', () => {
-                    const modal = document.getElementById('imageModal');
-                    const modalImg = document.getElementById('modalImage');
-                    modalImg.src = img.src;
-                    modal.classList.add('active');
-                });
-            });
-
-            document.getElementById('closeModal').addEventListener('click', () => {
-                document.getElementById('imageModal').classList.remove('active');
-            });
-
-            document.getElementById('imageModal').addEventListener('click', (e) => {
-                if (e.target === e.currentTarget) {
-                    e.currentTarget.classList.remove('active');
-                }
-            });
-
-            // Comment form
-            document.getElementById('commentForm').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const textarea = e.target.querySelector('textarea');
-                if (textarea.value.trim()) {
-                    showToast('Comment posted successfully!');
-                    textarea.value = '';
-                }
-            });
-
-            // Toast notification
-            function showToast(message) {
-                const toast = document.createElement('div');
-                toast.className =
-                    'fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300';
-                toast.textContent = message;
-                document.body.appendChild(toast);
-
-                setTimeout(() => {
-                    toast.classList.remove('translate-y-full', 'opacity-0');
-                }, 100);
-
-                setTimeout(() => {
-                    toast.classList.add('translate-y-full', 'opacity-0');
                     setTimeout(() => {
-                        document.body.removeChild(toast);
-                    }, 300);
-                }, 3000);
-            }
+                        toast.classList.add('translate-y-full', 'opacity-0');
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                }
+            };
 
-            // Smooth scrolling for TOC links
-            document.querySelectorAll('.toc-link').forEach(link => {
-                link.addEventListener('click', (e) => {
+            // Event Handlers Module
+            const EventHandlers = {
+                handleCopyCode(button) {
+                    const codeBlock = button.parentElement.querySelector('code');
+                    if (!codeBlock) return;
+
+                    navigator.clipboard.writeText(codeBlock.textContent)
+                        .then(() => {
+                            button.innerHTML = '<i class="fas fa-check mr-1"></i>Copied!';
+                            setTimeout(() => {
+                                button.innerHTML = '<i class="fas fa-copy mr-1"></i>Copy';
+                            }, 2000);
+                        })
+                        .catch(error => {
+                            console.error('Error copying code:', error);
+                            UIController.showToast('Failed to copy code', 'error');
+                        });
+                },
+
+                handleLikeClick() {
+                    try {
+                        const icon = this.querySelector('i');
+                        const countSpan = document.getElementById('likeCount');
+                        const count = parseInt(countSpan.textContent);
+
+                        const isLiked = icon.classList.contains('far');
+                        icon.classList.toggle('far', !isLiked);
+                        icon.classList.toggle('fas', isLiked);
+                        this.classList.toggle('text-red-500', isLiked);
+                        countSpan.textContent = count + (isLiked ? 1 : -1);
+
+                        if (isLiked) UIController.showToast('Thanks for liking!');
+                    } catch (error) {
+                        console.error('Error handling like click:', error);
+                        UIController.showToast('Failed to update like status', 'error');
+                    }
+                },
+
+                handleBookmarkClick() {
+                    try {
+                        const icon = this.querySelector('i');
+                        const isBookmarked = icon.classList.contains('far');
+
+                        icon.classList.toggle('far', !isBookmarked);
+                        icon.classList.toggle('fas', isBookmarked);
+                        this.classList.toggle('text-purple-600', isBookmarked);
+
+                        UIController.showToast(isBookmarked ? 'Article bookmarked!' : 'Bookmark removed');
+                    } catch (error) {
+                        console.error('Error handling bookmark click:', error);
+                        UIController.showToast('Failed to update bookmark status', 'error');
+                    }
+                },
+
+                handleImageZoom(img) {
+                    const { imageModal } = UIController.elements;
+                    if (!imageModal) return;
+
+                    const modalImg = imageModal.querySelector('#modalImage');
+                    if (modalImg) {
+                        modalImg.src = img.src;
+                        imageModal.classList.add('active');
+                    }
+                },
+
+                handleCommentSubmit(e) {
                     e.preventDefault();
-                    const targetId = link.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
+                    const textarea = e.target.querySelector('textarea');
+                    if (!textarea) return;
+
+                    const comment = textarea.value.trim();
+                    if (comment) {
+                        // Here you would typically send the comment to your backend
+                        UIController.showToast('Comment posted successfully!');
+                        textarea.value = '';
+                    }
+                }
+            };
+
+            // Social Sharing Module
+const SocialSharing = {
+    shareUrls: {
+        twitter: (url, title) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+        facebook: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+        linkedin: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+        whatsapp: (url, title) => `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`
+    },
+
+    async copyToClipboard(button, text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            button.innerHTML = '<i class="fas fa-check text-xl"></i>';
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-link text-xl"></i>';
+            }, 2000);
+            UIController.showToast('Link copied to clipboard!');
+        } catch (error) {
+            console.error('Error copying to clipboard:', error);
+            UIController.showToast('Failed to copy link', 'error');
+        }
+    },
+
+    share(platform, button) {
+        const url = window.location.href;
+        const title = document.title;
+
+        if (platform === 'copy') {
+            this.copyToClipboard(button, url);
+            return;
+        }
+
+        const shareUrl = this.shareUrls[platform]?.(url, title);
+        if (shareUrl) {
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+    },
+
+    init() {
+        document.querySelectorAll('.social-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const platform = button.dataset.platform;
+                this.share(platform, button);
+            });
+        });
+    }
+};
+
+// Initialize Event Listeners
+function initializeEventListeners() {
+    const { elements } = UIController;
+
+    // Initialize social sharing
+    SocialSharing.init();
+
+    // Scroll events with throttling
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                UIController.updateReadingProgress();
+                UIController.updateTOC();
+                UIController.toggleFloatingElements();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+                // Copy code buttons
+                elements.copyButtons?.forEach(button => {
+                    button.addEventListener('click', () => EventHandlers.handleCopyCode(button));
+                });
+
+                // Like button
+                elements.likeBtn?.addEventListener('click', EventHandlers.handleLikeClick);
+
+                // Bookmark button
+                elements.bookmarkBtn?.addEventListener('click', EventHandlers.handleBookmarkClick);
+
+                // Image zoom
+                elements.zoomImages?.forEach(img => {
+                    img.addEventListener('click', () => EventHandlers.handleImageZoom(img));
+                });
+
+                // Modal close
+                elements.closeModal?.addEventListener('click', () => {
+                    elements.imageModal?.classList.remove('active');
+                });
+
+                elements.imageModal?.addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        e.currentTarget.classList.remove('active');
+                    }
+                });
+
+                // Comment form
+                elements.commentForm?.addEventListener('submit', EventHandlers.handleCommentSubmit);
+
+                // Smooth scrolling for TOC links
+                elements.tocLinks?.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const targetId = link.getAttribute('href')?.substring(1);
+                        const targetElement = targetId ? document.getElementById(targetId) : null;
+                        targetElement?.scrollIntoView({
                             behavior: 'smooth',
                             block: 'start'
                         });
-                    }
+                    });
                 });
-            });
+            }
 
-            // Initialize
+            // Initialize on DOM load
             document.addEventListener('DOMContentLoaded', () => {
-                updateReadingProgress();
-                updateTOC();
-                toggleFloatingElements();
+                initializeEventListeners();
+                UIController.updateReadingProgress();
+                UIController.updateTOC();
+                UIController.toggleFloatingElements();
             });
         </script>
     @endpush

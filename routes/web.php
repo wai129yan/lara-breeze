@@ -8,13 +8,16 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TwitterController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserFollowController;
 use App\Models\Post;
-// use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// use App\Http\Controllers\UserController;
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::view('/about', 'about')->name('about');
 // Route::get('/test', function () {
 //     $post = Post::find(1);
 //     return $post->category->name;
@@ -24,8 +27,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/authors', [ProfileController::class, 'index'])->name('authors.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/{user}/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
@@ -38,11 +42,27 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('users', UserController::class);
 Route::resource('tags', TagController::class);
-Route::resource('posts', PostController::class);
+
+Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+
+// Posts routes with auth middleware for create, store, edit, update, destroy
+Route::resource('posts', PostController::class)->only(['index', 'show']);
+Route::middleware('auth')->group(function () {
+    Route::resource('posts', PostController::class)->except(['index', 'show']);
+    Route::patch('/posts/{post}/status', [PostController::class, 'updateStatus'])->name('posts.update-status');
+});
+
 Route::resource('categories', CategoryController::class);
 Route::resource('comments', CommentController::class);
 Route::resource('claps', ClapController::class);
 Route::resource('follow', UserFollowController::class);
 Route::resource('series', SeriesController::class);
+
+Route::get('/tweet', [TwitterController::class, 'postTweet'])->name('tweet.post');
+Route::get('/all-users', [TwitterController::class, 'getAllUsers'])->name('users.all');
+Route::get('/user/{id}', [TwitterController::class, 'getUser'])->name('user.get');
+Route::get('/user/{id}/tweets', [TwitterController::class, 'getUserTweets'])->name('tweets.user');
+Route::get('/user/{id}/tweets2', [TwitterController::class, 'getUserTweets2'])->name('tweets.user2');
+Route::get('/tweet-media', [TwitterController::class, 'postTweetWithMedia'])->name('tweet.media');
 
 require __DIR__ . '/auth.php';

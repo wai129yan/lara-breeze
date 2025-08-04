@@ -3,7 +3,6 @@
 @section('content')
     <!-- Header -->
 
-
     <!-- Category Navigation -->
     <div class="bg-white border-b">
         <div class="container mx-auto px-4 py-3 overflow-x-auto">
@@ -21,7 +20,7 @@
             </div>
         </div>
     </div>
-
+`
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-8">
         <!-- Featured Post -->
