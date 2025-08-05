@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $posts = Post::latest()->limit(9)->get();
+        $posts = Post::with('user', 'category')->latest()->limit(9)->get();
         return view('home', compact('posts'));
     }
 }

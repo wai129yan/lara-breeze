@@ -13,7 +13,14 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with('category', 'user')->latest()->paginate(10);
+        $user = Auth::user();
+        $postsQuery = Post::with('category', 'user')->latest();
+
+        if ($user) {
+            $postsQuery->where('user_id', $user->id);
+        }
+
+        $posts = $postsQuery->paginate(10);
         return view('posts.index', compact('posts'));
     }
 
@@ -94,10 +101,10 @@ class PostController extends Controller
         // return response()->json($post);
     }
 
-    public function edit(Post $post)
-    {
+    public function edit(Post $post) {
         $categories = Category::all();
-        return view('posts.edit', compact('post', 'categories'));
+        $tags = Tag::all();
+        return view('posts.edit', compact('post', 'categories', 'tags'));
     }
 
     public function update(Request $request, Post $post)

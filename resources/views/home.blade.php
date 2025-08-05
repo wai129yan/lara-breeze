@@ -51,13 +51,13 @@
                             </h3>
                             <p class="text-gray-600 mb-4">{{ generateExcerpt($post->content, 50) }}</p>
                             <div class="flex items-center">
-                                <a href="{{ route('users.show', $post->user->id) }}"><img
-                                        src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author"
-                                        class="w-8 h-8 rounded-full mr-2"></a>
+                                <a href="{{ $post->user ? route('users.show', $post->user->id) : '#' }}">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Author" class="w-8 h-8 rounded-full mr-2">
+                                </a>
                                 <div>
                                     <p class="text-sm font-medium">
-                                        <a href="{{ route('users.show', $post->user->id) }}">
-                                            {{ $post->user->name }}
+                                        <a href="{{ $post->user ? route('users.show', $post->user->id) : '#' }}">
+                                            {{ $post->user ? $post->user->name : 'Anonymous' }}
                                         </a>
                                     </p>
                                     <p class="text-xs text-gray-500">{{ timeToRead($post->content, 10) }}</p>
