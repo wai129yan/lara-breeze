@@ -213,7 +213,20 @@ class PostResource extends Resource
                         'draft' => 'Draft',
                         'published' => 'Published',
                     ]),
-                Forms\Components\DateTimePicker::make('published_at'),
+                Forms\Components\Toggle::make('status')
+                    ->label('Public')
+                    ->helperText('Toggle to publish the post.')
+                    ->formatStateUsing(fn($state) => $state === 'published')
+                    ->dehydrateStateUsing(function ($state, $record) {
+                        $status = $state ? 'published' : 'draft';
+                        if ($state && is_null($record->published_at)) {
+                            $record->published_at = now();
+                            $record->save();
+                        }
+                        return $status;
+                    }),
+                Forms\Components\DateTimePicker::make('published_at')
+                    ->disabled(),  // Optional: disable if you want auto-set
             ]);
     }
 

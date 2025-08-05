@@ -294,75 +294,131 @@
                         <i class="fas fa-file-alt mr-2 text-green-600"></i>
                         My Posts
                     </h3>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white border border-gray-200">
                             <thead>
                                 <tr>
-                                    <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                    <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th
+                                        class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Title</th>
+                                    <th
+                                        class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th
+                                        class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date</th>
+                                    <th
+                                        class="py-2 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
-                                @foreach(auth()->user()->posts()->latest()->paginate(5) as $post)
-                                <tr>
-                                    <td class="py-3 px-4">
-                                        <div class="flex items-center">
-                                            @if($post->featured_image)
-                                            <div class="flex-shrink-0 h-10 w-10 mr-3">
-                                                <img class="h-10 w-10 rounded-md object-cover" src="{{ $post->featured_image }}" alt="{{ $post->title }}">
+                                @foreach (auth()->user()->posts()->latest()->paginate(5) as $post)
+                                    <tr>
+                                        <td class="py-3 px-4">
+                                            <div class="flex items-center">
+                                                @if ($post->featured_image)
+                                                    <div class="flex-shrink-0 h-10 w-10 mr-3">
+                                                        <img class="h-10 w-10 rounded-md object-cover"
+                                                            src="{{ asset('storage/' . $post->featured_image) }}"
+                                                            alt="{{ $post->title }}">
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">{{ $post->title }}
+                                                    </div>
+                                                    <div class="text-sm text-gray-500 truncate max-w-xs">
+                                                        {{ $post->subtitle }}</div>
+                                                </div>
                                             </div>
-                                            @endif
-                                            <div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $post->title }}</div>
-                                                <div class="text-sm text-gray-500 truncate max-w-xs">{{ $post->subtitle }}</div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div x-data="{
+                                                status: '{{ $post->status }}',
+                                                isLoading: false,
+                                                async updateStatus() {
+                                                    this.isLoading = true;
+                                                    try {
+                                                        await fetch('{{ route('posts.update-status', $post) }}', {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json',
+                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                            },
+                                                            body: JSON.stringify({
+                                                                _method: 'PATCH',
+                                                                status: this.status
+                                                            })
+                                                        });
+                                            
+                                                        // Show success notification
+                                                        $dispatch('notify', {
+                                                            message: 'Status updated successfully',
+                                                            type: 'success'
+                                                        });
+                                                    } catch (error) {
+                                                        // Show error notification
+                                                        $dispatch('notify', {
+                                                            message: 'Failed to update status',
+                                                            type: 'error'
+                                                        });
+                                                    } finally {
+                                                        this.isLoading = false;
+                                                    }
+                                                }
+                                            }" @change="updateStatus()">
+                                                <select x-model="status" :disabled="isLoading"
+                                                    class="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    <option value="draft">Draft</option>
+                                                    <option value="published">Published</option>
+
+                                                </select>
+                                                <div x-show="isLoading" class="mt-1 text-xs text-gray-500">
+                                                    Updating...
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4">
-                                        <form action="{{ route('posts.update-status', $post) }}" method="POST" class="status-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status" class="status-select text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" onchange="this.form.submit()">
-                                                <option value="draft" {{ $post->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                                <option value="published" {{ $post->status == 'published' ? 'selected' : '' }}>Published</option>
-                                            </select>
-                                        </form>
-                                    </td>
-                                    <td class="py-3 px-4">
-                                        <div class="text-sm text-gray-900">{{ $post->published_at ? $post->published_at->format('M d, Y') : 'Not published' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $post->created_at->format('M d, Y') }}</div>
-                                    </td>
-                                    <td class="py-3 px-4 text-sm">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('posts.edit', $post) }}" class="text-blue-600 hover:text-blue-900">Edit</a>
-                                            <a href="{{ route('posts.show', $post) }}" class="text-green-600 hover:text-green-900">View</a>
-                                            <form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline-block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div class="text-sm text-gray-900">
+                                                {{ $post->published_at ? $post->published_at->format('M d, Y') : 'Not published' }}
+                                            </div>
+                                            <div class="text-sm text-gray-500">{{ $post->created_at->format('M d, Y') }}
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-sm">
+                                            <div class="flex space-x-2">
+                                                <a href="{{ route('posts.edit', $post) }}"
+                                                    class="text-blue-600 hover:text-blue-900">Edit</a>
+                                                <a href="{{ route('posts.show', $post) }}"
+                                                    class="text-green-600 hover:text-green-900">View</a>
+                                                <form action="{{ route('posts.destroy', $post) }}" method="POST"
+                                                    class="inline-block">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900"
+                                                        onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="mt-4">
                         {{ auth()->user()->posts()->latest()->paginate(5)->links() }}
                     </div>
-                    
+
                     <div class="mt-6">
-                        <a href="{{ route('posts.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:border-blue-800 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        <a href="{{ route('posts.create') }}"
+                            class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:border-blue-800 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                             <i class="fas fa-plus mr-2"></i> Create New Post
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Account Management Section -->
                 <div class="settings-section bg-white rounded-lg shadow-sm border p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
@@ -480,23 +536,24 @@
                         }, 100);
                     });
                 });
-                
+
                 // Post status change handling
                 document.querySelectorAll('.status-select').forEach(select => {
                     select.addEventListener('change', function() {
                         // Show loading indicator
                         const originalText = this.options[this.selectedIndex].text;
                         this.options[this.selectedIndex].text = 'Updating...';
-                        
+
                         // Submit the form
                         this.form.submit();
-                        
+
                         // Show notification
                         const statusNotification = document.createElement('div');
-                        statusNotification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-md shadow-lg z-50';
+                        statusNotification.className =
+                            'fixed top-4 right-4 bg-blue-500 text-white px-6 py-3 rounded-md shadow-lg z-50';
                         statusNotification.textContent = 'Updating post status...';
                         document.body.appendChild(statusNotification);
-                        
+
                         setTimeout(() => {
                             statusNotification.remove();
                         }, 2000);

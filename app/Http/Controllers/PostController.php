@@ -90,7 +90,7 @@ class PostController extends Controller
             $post->tags()->attach($tagIds);
         }
 
-        return redirect()->route('posts.index')->with('success', 'Post created successfully.');
+        return redirect()->route('authors.index')->with('success', 'Post created successfully.');
     }
 
     public function show(Post $post)
@@ -101,7 +101,8 @@ class PostController extends Controller
         // return response()->json($post);
     }
 
-    public function edit(Post $post) {
+    public function edit(Post $post)
+    {
         $categories = Category::all();
         $tags = Tag::all();
         return view('posts.edit', compact('post', 'categories', 'tags'));
@@ -118,12 +119,33 @@ class PostController extends Controller
             'content' => 'nullable|string',
             'status' => 'required|in:draft,published',
             'published_at' => 'nullable|date',
+            'tags' => 'nullable|array',
         ]);
 
         $data = $request->all();
 
         if ($request->hasFile('featured_image')) {
             $data['featured_image'] = $request->file('featured_image')->store('images/posts', 'public');
+        }
+
+        // Set published_at if status is published and no date is provided
+        if ($data['status'] === 'published' && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
+        // Handle tags
+        if ($request->has('tags')) {
+            $tagIds = [];
+            foreach ($request->tags as $tagId) {
+                if (is_numeric($tagId)) {
+                    $tagIds[] = $tagId;
+                } else {
+                    $slug = Str::slug($tagId);
+                    $tag = Tag::firstOrCreate(['slug' => $slug], ['name' => $tagId, 'slug' => $slug]);
+                    $tagIds[] = $tag->id;
+                }
+            }
+            $post->tags()->sync($tagIds);
         }
 
         $post->update($data);
@@ -157,9 +179,15 @@ class PostController extends Controller
         }
 
         // Update the post status
-        $post->update([
+        $updateData = [
             'status' => $request->status
-        ]);
+        ];
+
+        if ($request->status === 'published' && is_null($post->published_at)) {
+            $updateData['published_at'] = now();
+        }
+
+        $post->update($updateData);
 
         return redirect()->back()->with('success', 'Post status updated successfully.');
     }
