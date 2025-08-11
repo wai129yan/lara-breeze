@@ -37,7 +37,8 @@ class ProfileController extends Controller
         $user->fill($request->validated());
 
         // Handle bio field if present
-        if ($request->has('bio')) {
+        // return $request->bio;
+        if ($user->bio !== $request->bio) {
             $user->bio = $request->bio;
         }
 

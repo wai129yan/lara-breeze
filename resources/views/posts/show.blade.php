@@ -58,10 +58,10 @@
             }
 
             /* .social-share.hidden {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                pointer-events: none;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateY(-50%) translateX(-100%);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } */
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity: 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                pointer-events: none;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateY(-50%) translateX(-100%);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } */
 
             .highlight-selection {
                 background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
@@ -198,7 +198,7 @@
                     {{ $post->title }}
                 </h1>
                 <p class="text-xl text-gray-600 leading-relaxed">
-                    {{ $post->content }}
+                    {!! $post->content !!}
                 </p>
             </div>
 
@@ -378,7 +378,10 @@
 
                 updateReadingProgress() {
                     try {
-                        const { article, readingProgress } = this.elements;
+                        const {
+                            article,
+                            readingProgress
+                        } = this.elements;
                         if (!article || !readingProgress) return;
 
                         const scrollTop = window.pageYOffset;
@@ -395,7 +398,10 @@
 
                 updateTOC() {
                     try {
-                        const { sections, tocLinks } = this.elements;
+                        const {
+                            sections,
+                            tocLinks
+                        } = this.elements;
                         if (!sections.length || !tocLinks.length) return;
 
                         let current = '';
@@ -419,7 +425,10 @@
 
                 toggleFloatingElements() {
                     try {
-                        const { floatingToc, socialShare } = this.elements;
+                        const {
+                            floatingToc,
+                            socialShare
+                        } = this.elements;
                         if (!floatingToc || !socialShare) return;
 
                         const scrollY = window.pageYOffset;
@@ -435,7 +444,8 @@
                 showToast(message, type = 'info') {
                     const toast = document.createElement('div');
                     const bgColor = type === 'error' ? 'bg-red-500' : 'bg-gray-900';
-                    toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300`;
+                    toast.className =
+                        `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-full opacity-0 transition-all duration-300`;
                     toast.textContent = message;
                     document.body.appendChild(toast);
 
@@ -505,7 +515,9 @@
                 },
 
                 handleImageZoom(img) {
-                    const { imageModal } = UIController.elements;
+                    const {
+                        imageModal
+                    } = UIController.elements;
                     if (!imageModal) return;
 
                     const modalImg = imageModal.querySelector('#modalImage');
@@ -530,73 +542,76 @@
             };
 
             // Social Sharing Module
-const SocialSharing = {
-    shareUrls: {
-        twitter: (url, title) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
-        facebook: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-        linkedin: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
-        whatsapp: (url, title) => `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`
-    },
+            const SocialSharing = {
+                shareUrls: {
+                    twitter: (url, title) =>
+                        `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+                    facebook: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+                    linkedin: (url) => `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
+                    whatsapp: (url, title) => `https://wa.me/?text=${encodeURIComponent(title + ' ' + url)}`
+                },
 
-    async copyToClipboard(button, text) {
-        try {
-            await navigator.clipboard.writeText(text);
-            button.innerHTML = '<i class="fas fa-check text-xl"></i>';
-            setTimeout(() => {
-                button.innerHTML = '<i class="fas fa-link text-xl"></i>';
-            }, 2000);
-            UIController.showToast('Link copied to clipboard!');
-        } catch (error) {
-            console.error('Error copying to clipboard:', error);
-            UIController.showToast('Failed to copy link', 'error');
-        }
-    },
+                async copyToClipboard(button, text) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        button.innerHTML = '<i class="fas fa-check text-xl"></i>';
+                        setTimeout(() => {
+                            button.innerHTML = '<i class="fas fa-link text-xl"></i>';
+                        }, 2000);
+                        UIController.showToast('Link copied to clipboard!');
+                    } catch (error) {
+                        console.error('Error copying to clipboard:', error);
+                        UIController.showToast('Failed to copy link', 'error');
+                    }
+                },
 
-    share(platform, button) {
-        const url = window.location.href;
-        const title = document.title;
+                share(platform, button) {
+                    const url = window.location.href;
+                    const title = document.title;
 
-        if (platform === 'copy') {
-            this.copyToClipboard(button, url);
-            return;
-        }
+                    if (platform === 'copy') {
+                        this.copyToClipboard(button, url);
+                        return;
+                    }
 
-        const shareUrl = this.shareUrls[platform]?.(url, title);
-        if (shareUrl) {
-            window.open(shareUrl, '_blank', 'width=600,height=400');
-        }
-    },
+                    const shareUrl = this.shareUrls[platform]?.(url, title);
+                    if (shareUrl) {
+                        window.open(shareUrl, '_blank', 'width=600,height=400');
+                    }
+                },
 
-    init() {
-        document.querySelectorAll('.social-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const platform = button.dataset.platform;
-                this.share(platform, button);
-            });
-        });
-    }
-};
+                init() {
+                    document.querySelectorAll('.social-btn').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const platform = button.dataset.platform;
+                            this.share(platform, button);
+                        });
+                    });
+                }
+            };
 
-// Initialize Event Listeners
-function initializeEventListeners() {
-    const { elements } = UIController;
+            // Initialize Event Listeners
+            function initializeEventListeners() {
+                const {
+                    elements
+                } = UIController;
 
-    // Initialize social sharing
-    SocialSharing.init();
+                // Initialize social sharing
+                SocialSharing.init();
 
-    // Scroll events with throttling
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                UIController.updateReadingProgress();
-                UIController.updateTOC();
-                UIController.toggleFloatingElements();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
+                // Scroll events with throttling
+                let ticking = false;
+                window.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        window.requestAnimationFrame(() => {
+                            UIController.updateReadingProgress();
+                            UIController.updateTOC();
+                            UIController.toggleFloatingElements();
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                });
 
                 // Copy code buttons
                 elements.copyButtons?.forEach(button => {

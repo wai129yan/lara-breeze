@@ -392,13 +392,13 @@
                                                     class="text-blue-600 hover:text-blue-900">Edit</a>
                                                 <a href="{{ route('posts.show', $post) }}"
                                                     class="text-green-600 hover:text-green-900">View</a>
-                                                <form action="{{ route('posts.destroy', $post) }}" method="POST"
+                                                {{-- <form action="{{ route('posts.destroy', $post) }}" method="POST"
                                                     class="inline-block">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="text-red-600 hover:text-red-900"
                                                         onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
-                                                </form>
+                                                </form> --}}
                                             </div>
                                         </td>
                                     </tr>

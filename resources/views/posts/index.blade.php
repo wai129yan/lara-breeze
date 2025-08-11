@@ -1,61 +1,91 @@
 @extends('layouts.app')
 
-@section('title', 'My Posts')
+@section('title', 'All Posts')
 
 @section('content')
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">My Created Posts</h1>
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">All Posts</h1>
 
-        @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
+        </div>
 
-        <a href="{{ route('posts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Create New Post</a>
+        <div id="posts-container" class="grid grid-cols-1 gap-6">
+            @foreach ($posts as $post)
+                @include('posts.partials.post-card', ['post' => $post])
+            @endforeach
+        </div>
 
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="border px-4 py-2">Image</th>
-                    <th class="border px-4 py-2">Title</th>
-                    <th class="border px-4 py-2">Category</th>
-                    <th class="border px-4 py-2">Status</th>
-                    <th class="border px-4 py-2">Published At</th>
-                    <th class="border px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($posts as $post)
-                    <tr>
-                        <td class="border px-4 py-2">
-                            @if ($post->featured_image)
-                                <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}" class="w-16 h-16 object-cover">
-                            @else
-                                <img src="/placeholder.svg?height=64&width=64" alt="No Image" class="w-16 h-16 object-cover">
-                            @endif
-                        </td>
-                        <td class="border px-4 py-2"><a href="{{ route('posts.show', $post) }}" class="text-blue-500 hover:underline">{{ $post->title }}</a></td>
-                        <td class="border px-4 py-2">{{ $post->category->name ?? 'N/A' }}</td>
-                        <td class="border px-4 py-2">{{ ucfirst($post->status) }}</td>
-                        <td class="border px-4 py-2">{{ $post->published_at ? $post->published_at->format('Y-m-d') : 'N/A' }}</td>
-                        <td class="border px-4 py-2">
-                            <a href="{{ route('posts.edit', $post) }}" class="text-yellow-500 hover:underline">Edit</a>
-                            <form action="{{ route('posts.destroy', $post) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:underline ml-2" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="border px-4 py-2 text-center">No posts found.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-
-        {{ $posts->links() }}
+        <div id="loading" class="text-center py-4 hidden">Loading more posts...</div>
     </div>
 @endsection
+
+@push('script')
+    <script>
+        let nextPageUrl = '{{ $posts->nextPageUrl() }}';
+        let loading = false;
+
+        window.addEventListener('scroll', () => {
+            if (loading || !nextPageUrl) return;
+
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                loading = true;
+                document.getElementById('loading').classList.remove('hidden');
+                fetchPosts();
+            }
+        });
+
+        function fetchPosts() {
+            fetch(nextPageUrl, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    appendPosts(data.posts);
+                    nextPageUrl = data.next_page_url;
+                    loading = false;
+                    document.getElementById('loading').classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error fetching posts:', error);
+                    loading = false;
+                    document.getElementById('loading').classList.add('hidden');
+                });
+        }
+
+        function appendPosts(posts) {
+            const container = document.getElementById('posts-container');
+            posts.forEach(post => {
+                let tagsHtml = '';
+                if (post.tags && post.tags.length > 0) {
+                    post.tags.forEach(tag => {
+                        tagsHtml +=
+                            `<span class="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-blue-700 mr-2">${tag.name}</span>`;
+                    });
+                }
+
+                let categoryHtml = '';
+                if (post.category) {
+                    categoryHtml =
+                        `<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">${post.category.name}</span>`;
+                }
+
+                const postElement = document.createElement('div');
+                postElement.classList.add('bg-white', 'rounded-lg', 'shadow-md', 'p-4');
+                postElement.innerHTML = `
+                    <h2 class="text-xl font-semibold mb-2"><a href="${post.slug}" class="text-blue-600 hover:underline">${post.title}</a></h2>
+                    <p class="text-gray-600 mb-2">${post.subtitle ? post.subtitle.substring(0, 100) + '...' : ''}</p>
+                    <div class="text-sm text-gray-500">
+                        By ${post.user.name} | ${new Date(post.published_at).toLocaleDateString()}
+                    </div>
+                    <div class="mt-2">
+                        ${categoryHtml}
+                        ${tagsHtml}
+                    </div>
+                `;
+                container.appendChild(postElement);
+            });
+        }
+    </script>
+@endpush
