@@ -22,7 +22,13 @@
                     <a href="{{ route('posts.create') }}"
                         class="text-gray-600 hover:text-primary font-medium transition">Create Post</a>
                 @endauth
+                <a href="{{ route('posts.index') }}" class="text-gray-600 hover:text-primary font-medium transition">All
+                    Posts</a>
+
+                <a href="/admin" class="text-gray-600 hover:text-primary font-medium transition">Admin</a>
             </nav>
+
+
 
             <!-- Mobile Menu Button -->
             <button class="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none" id="mobile-menu-button">

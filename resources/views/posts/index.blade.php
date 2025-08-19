@@ -6,10 +6,11 @@
     <div class="container mx-auto px-4 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800">All Posts</h1>
-
+            <a href="{{ route('posts.create', ['user' => auth()->user()->id]) }}"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Create New Post</a>
         </div>
 
-        <div id="posts-container" class="grid grid-cols-1 gap-6">
+        <div id="posts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($posts as $post)
                 @include('posts.partials.post-card', ['post' => $post])
             @endforeach

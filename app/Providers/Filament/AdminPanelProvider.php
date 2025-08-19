@@ -27,6 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->darkMode(true)  // Enable dark mode with theme switcher
             ->colors([
                 'primary' => Color::Amber,
             ])

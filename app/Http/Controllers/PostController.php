@@ -13,12 +13,12 @@ class PostController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-        $postsQuery = Post::with('category', 'user')->latest();
+        // $user = Auth::user();
+        $postsQuery = Post::with('category')->latest();
 
-        if ($user) {
-            $postsQuery->where('user_id', $user->id);
-        }
+        // if ($user) {
+        //     $postsQuery->where('user_id', $user->id);
+        // }
 
         $posts = $postsQuery->paginate(10);
         return view('posts.index', compact('posts'));
@@ -150,13 +150,13 @@ class PostController extends Controller
 
         $post->update($data);
 
-        return redirect()->route('posts.index')->with('success', 'Post updated successfully.');
+        return redirect()->route('authors.index')->with('success', 'Post updated successfully.');
     }
 
     public function destroy(Post $post)
     {
         $post->delete();
-        return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
+        return redirect()->route('authors.index')->with('success', 'Post deleted successfully.');
     }
 
     /**

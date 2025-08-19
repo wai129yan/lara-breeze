@@ -58,10 +58,8 @@
             }
 
             /* .social-share.hidden {
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                opacity: 0;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                pointer-events: none;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                transform: translateY(-50%) translateX(-100%);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            } */
+                                                                                                                                                                                                      transform: translateY(-50%) translateX(-100%);
+                                                                                                                                                                                                                 } */
 
             .highlight-selection {
                 background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
@@ -204,7 +202,10 @@
 
             <div class="flex flex-wrap items-center justify-between gap-4 py-6 border-t border-b border-gray-200">
                 <div class="flex items-center space-x-4">
-                    <img src="/placeholder.svg?height=48&width=48" alt="Sarah Johnson" class="w-12 h-12 rounded-full">
+                    <img id="profileImage"
+                        src="{{ auth()->user()->profile_image_url ? asset(auth()->user()->profile_image_url) : '/placeholder.svg?height=120&width=120' }}"
+                        alt="Profile Picture"
+                        class="profile-avatar w-24 h-24 rounded-full object-cover border-4 border-gray-200">
                     <div>
                         <div class="flex items-center space-x-2">
                             <a href="#"
@@ -307,7 +308,7 @@
 
                 <div class="flex items-center space-x-4">
                     <button id="likeBtn"
-                        class="flex items-center space-x-2 text-gray-600 hover:text-red-500 transition-colors">
+                        class="flex items-center space-x-2 text-gray-600 hover:text-blue-500 transition-colors">
                         <i class="fa-solid fa-hands-clapping"></i>
                         <span id="likeCount">{{ $post->clapCounts() }}</span>
                     </button>
@@ -339,11 +340,18 @@
                         </p>
                         <div class="flex items-center space-x-4">
                             <a href="#" class="text-purple-600 hover:text-purple-700 font-medium">View Profile</a>
-                            <button
-                                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
-                                Follow
+                            <button id="followBtn"
+                                class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                                data-user-id="{{ $post->user->id }}"
+                                data-is-following="{{ auth()->check() && auth()->user()->isFollowing($post->user) ? 'true' : 'false' }}">
+                                {{ auth()->check() && auth()->user()->isFollowing($post->user) ? 'Following' : 'Follow' }}
                             </button>
+                            <span class="text-purple-600 hover:text-purple-700 font-medium"> Follower
+                                ::<span
+                                    class="py-2 px-3 rounded-full m-3 bg-purple-600 text-white followers-count">{{ $post->user->followers_count }}</span>
+                            </span>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -479,65 +487,46 @@
                         });
                 },
 
-                handleLikeClick() {
-                    try {
-                        const icon = this.querySelector('i');
-                        const countSpan = document.getElementById('likeCount');
-                        const count = parseInt(countSpan.textContent);
+                handleFollowClick(button) {
+                    const userId = button.dataset.userId;
+                    const isFollowing = button.dataset.isFollowing === 'true';
+                    const csrfToken = '{{ csrf_token() }}';
 
-                        const isLiked = icon.classList.contains('far');
-                        icon.classList.toggle('far', !isLiked);
-                        icon.classList.toggle('fas', isLiked);
-                        this.classList.toggle('text-red-500', isLiked);
-                        countSpan.textContent = count + (isLiked ? 1 : -1);
+                    // Disable button during request
+                    button.disabled = true;
 
-                        if (isLiked) UIController.showToast('Thanks for liking!');
-                    } catch (error) {
-                        console.error('Error handling like click:', error);
-                        UIController.showToast('Failed to update like status', 'error');
-                    }
-                },
+                    fetch(`/users/${userId}/toggle-follow`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            button.dataset.isFollowing = data.following;
+                            button.textContent = data.following ? 'Following' : 'Follow';
 
-                handleBookmarkClick() {
-                    try {
-                        const icon = this.querySelector('i');
-                        const isBookmarked = icon.classList.contains('far');
+                            // Update follower count - find the span that contains the count
+                            const followerCountEl = document.querySelector('span.bg-purple-600.text-white');
+                            if (followerCountEl && data.followers_count !== undefined) {
+                                followerCountEl.textContent = data.followers_count;
+                            }
 
-                        icon.classList.toggle('far', !isBookmarked);
-                        icon.classList.toggle('fas', isBookmarked);
-                        this.classList.toggle('text-purple-600', isBookmarked);
-
-                        UIController.showToast(isBookmarked ? 'Article bookmarked!' : 'Bookmark removed');
-                    } catch (error) {
-                        console.error('Error handling bookmark click:', error);
-                        UIController.showToast('Failed to update bookmark status', 'error');
-                    }
-                },
-
-                handleImageZoom(img) {
-                    const {
-                        imageModal
-                    } = UIController.elements;
-                    if (!imageModal) return;
-
-                    const modalImg = imageModal.querySelector('#modalImage');
-                    if (modalImg) {
-                        modalImg.src = img.src;
-                        imageModal.classList.add('active');
-                    }
-                },
-
-                handleCommentSubmit(e) {
-                    e.preventDefault();
-                    const textarea = e.target.querySelector('textarea');
-                    if (!textarea) return;
-
-                    const comment = textarea.value.trim();
-                    if (comment) {
-                        // Here you would typically send the comment to your backend
-                        UIController.showToast('Comment posted successfully!');
-                        textarea.value = '';
-                    }
+                            UIController.showToast(data.message);
+                        })
+                        .catch(error => {
+                            console.error('Error toggling follow:', error);
+                            UIController.showToast('Failed to update follow status', 'error');
+                        })
+                        .finally(() => {
+                            button.disabled = false;
+                        });
                 }
             };
 
@@ -619,10 +608,16 @@
                 });
 
                 // Like button
-                elements.likeBtn?.addEventListener('click', EventHandlers.handleLikeClick);
+                // elements.likeBtn?.addEventListener('click', handleLikeClick);
+
+                // Follow button
+                const followBtn = document.getElementById('followBtn');
+                if (followBtn) {
+                    followBtn.addEventListener('click', () => EventHandlers.handleFollowClick(followBtn));
+                }
 
                 // Bookmark button
-                elements.bookmarkBtn?.addEventListener('click', EventHandlers.handleBookmarkClick);
+                // elements.bookmarkBtn?.addEventListener('click', handleBookmarkClick);
 
                 // Image zoom
                 elements.zoomImages?.forEach(img => {

@@ -77,6 +77,6 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::route('authors.index')->with('status', 'account-deleted');
     }
 }

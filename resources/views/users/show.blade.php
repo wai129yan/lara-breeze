@@ -252,12 +252,12 @@
                     </div>
 
                     {{-- ✅ Fix: use $topUser instead of $user --}}
-                   <div>
-                    <div class="text-3xl font-bold text-gray-900 mb-2">
-                        {{ isset($topViewedUsers) && $topViewedUsers->isNotEmpty() ? $topViewedUsers->first()->total_post_views : 0 }}
+                    <div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">
+                            {{ isset($topViewedUsers) && $topViewedUsers->isNotEmpty() ? $topViewedUsers->first()->total_post_views : 0 }}
+                        </div>
+                        <div class="text-gray-600">Most Views</div>
                     </div>
-                    <div class="text-gray-600">Most Views</div>
-                </div>
 
                     <div>
                         <div class="text-3xl font-bold text-gray-900 mb-2">{{ $user->received_claps_count }}</div>
@@ -641,147 +641,165 @@
     @push('script')
         <script>
             // Follow button functionality
-            const followBtn = document.getElementById('followBtn');
-            let isFollowing = false;
+            <
+            script >
+                document.addEventListener('DOMContentLoaded', function() {
+                    const followBtn = document.getElementById('followBtn');
+                    const userId = {{ $user->id }}; // Assuming $user is passed to view
+                    const csrfToken = '{{ csrf_token() }}';
 
-            followBtn.addEventListener('click', function() {
-                if (isFollowing) {
-                    this.innerHTML = '<i class="fas fa-plus mr-2"></i>Follow';
-                    this.classList.remove('bg-purple-100', 'text-purple-600');
-                    this.classList.add('bg-white', 'text-purple-600');
-                    isFollowing = false;
-                } else {
-                    this.innerHTML = '<i class="fas fa-check mr-2"></i>Following';
-                    this.classList.remove('bg-white', 'text-purple-600');
-                    this.classList.add('bg-purple-100', 'text-purple-600');
-                    isFollowing = true;
-                }
-            });
+                    // Check initial follow status (you may need an API to check)
+                    // For simplicity, assume a variable isFollowed from backend
+                    let isFollowing = {{ Auth::user() && Auth::user()->isFollowing($user) ? 'true' : 'false' }};
+                    updateButton();
 
-            // Filter functionality
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const postCards = document.querySelectorAll('.post-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remove active class from all buttons
-                    filterBtns.forEach(b => {
-                        b.classList.remove('active', 'bg-purple-600', 'text-white');
-                        b.classList.add('bg-white', 'text-gray-700');
+                    followBtn.addEventListener('click', function() {
+                        fetch(`/users/${userId}/toggle-follow`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken
+                                }
+                            }).then(response => response.json())
+                            .then(data => {
+                                isFollowing = data.following;
+                                updateButton();
+                            });
                     });
 
-                    // Add active class to clicked button
-                    this.classList.add('active', 'bg-purple-600', 'text-white');
-                    this.classList.remove('bg-white', 'text-gray-700');
-
-                    const filter = this.getAttribute('data-filter');
-
-                    // Filter posts
-                    postCards.forEach(card => {
-                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                            card.style.display = 'block';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 100);
-                        } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
-                        }
-                    });
-                });
-            });
-
-            // Newsletter form
-            const newsletterForm = document.getElementById('newsletterForm');
-            newsletterForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = this.querySelector('input[type="email"]').value;
-                if (email) {
-                    alert('Thank you for subscribing! You\'ll receive Sarah\'s latest articles in your inbox.');
-                    this.reset();
-                }
-            });
-
-            // Load more functionality
-            const loadMoreBtn = document.getElementById('loadMoreBtn');
-            loadMoreBtn.addEventListener('click', function() {
-                // Simulate loading more posts
-                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
-                this.disabled = true;
-
-                setTimeout(() => {
-                    alert('More articles loaded! (This is a demo)');
-                    this.innerHTML = 'Load More Articles';
-                    this.disabled = false;
-                }, 2000);
-            });
-
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
+                    function updateButton() {
+                        followBtn.innerHTML = isFollowing ? '<i class="fas fa-minus mr-2"></i>Unfollow' :
+                            '<i class="fas fa-plus mr-2"></i>Follow';
+                        followBtn.classList.toggle('bg-red-600', isFollowing);
+                        followBtn.classList.toggle('bg-white', !isFollowing);
                     }
                 });
-            });
+        </script>
 
-            // Add scroll effect to navigation
-            window.addEventListener('scroll', function() {
-                const nav = document.querySelector('nav');
-                if (window.scrollY > 100) {
-                    nav.classList.add('shadow-lg');
-                } else {
-                    nav.classList.remove('shadow-lg');
-                }
-            });
+        // Filter functionality
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const postCards = document.querySelectorAll('.post-card');
 
-            // Animate stats on scroll
-            const observerOptions = {
-                threshold: 0.5,
-                rootMargin: '0px 0px -100px 0px'
-            };
+        filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+        // Remove active class from all buttons
+        filterBtns.forEach(b => {
+        b.classList.remove('active', 'bg-purple-600', 'text-white');
+        b.classList.add('bg-white', 'text-gray-700');
+        });
 
-            const observer = new IntersectionObserver(function(entries) {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const stats = entry.target.querySelectorAll('.text-3xl');
-                        stats.forEach(stat => {
-                            const finalValue = parseInt(stat.textContent.replace(/[^\d]/g, ''));
-                            animateValue(stat, 0, finalValue, 2000);
-                        });
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+        // Add active class to clicked button
+        this.classList.add('active', 'bg-purple-600', 'text-white');
+        this.classList.remove('bg-white', 'text-gray-700');
 
-            const statsSection = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
-            if (statsSection) {
-                observer.observe(statsSection);
-            }
+        const filter = this.getAttribute('data-filter');
 
-            function animateValue(element, start, end, duration) {
-                const range = end - start;
-                const increment = range / (duration / 16);
-                let current = start;
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= end) {
-                        current = end;
-                        clearInterval(timer);
-                    }
-                    const suffix = element.textContent.replace(/[\d.]/g, '');
-                    element.textContent = Math.floor(current) + suffix;
-                }, 16);
-            }
+        // Filter posts
+        postCards.forEach(card => {
+        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+        card.style.display = 'block';
+        setTimeout(() => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+        }, 100);
+        } else {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+        card.style.display = 'none';
+        }, 300);
+        }
+        });
+        });
+        });
+
+        // Newsletter form
+        const newsletterForm = document.getElementById('newsletterForm');
+        newsletterForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = this.querySelector('input[type="email"]').value;
+        if (email) {
+        alert('Thank you for subscribing! You\'ll receive Sarah\'s latest articles in your inbox.');
+        this.reset();
+        }
+        });
+
+        // Load more functionality
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.addEventListener('click', function() {
+        // Simulate loading more posts
+        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
+        this.disabled = true;
+
+        setTimeout(() => {
+        alert('More articles loaded! (This is a demo)');
+        this.innerHTML = 'Load More Articles';
+        this.disabled = false;
+        }, 2000);
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+        target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+        });
+        }
+        });
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', function() {
+        const nav = document.querySelector('nav');
+        if (window.scrollY > 100) {
+        nav.classList.add('shadow-lg');
+        } else {
+        nav.classList.remove('shadow-lg');
+        }
+        });
+
+        // Animate stats on scroll
+        const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+        if (entry.isIntersecting) {
+        const stats = entry.target.querySelectorAll('.text-3xl');
+        stats.forEach(stat => {
+        const finalValue = parseInt(stat.textContent.replace(/[^\d]/g, ''));
+        animateValue(stat, 0, finalValue, 2000);
+        });
+        observer.unobserve(entry.target);
+        }
+        });
+        }, observerOptions);
+
+        const statsSection = document.querySelector('.grid.grid-cols-2.md\\:grid-cols-4');
+        if (statsSection) {
+        observer.observe(statsSection);
+        }
+
+        function animateValue(element, start, end, duration) {
+        const range = end - start;
+        const increment = range / (duration / 16);
+        let current = start;
+        const timer = setInterval(() => {
+        current += increment;
+        if (current >= end) {
+        current = end;
+        clearInterval(timer);
+        }
+        const suffix = element.textContent.replace(/[\d.]/g, '');
+        element.textContent = Math.floor(current) + suffix;
+        }, 16);
+        }
         </script>
     @endpush
 

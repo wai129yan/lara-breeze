@@ -50,6 +50,7 @@ Route::resource('posts', PostController::class)->only(['index', 'show']);
 Route::middleware('auth')->group(function () {
     Route::resource('posts', PostController::class)->except(['index', 'show']);
     Route::patch('/posts/{post}/status', [PostController::class, 'updateStatus'])->name('posts.update-status');
+    // Route::get('/posts/all-posts', [PostController::class, 'allPosts'])->name('posts.all-posts');
 });
 
 Route::resource('categories', CategoryController::class);
@@ -64,5 +65,11 @@ Route::get('/user/{id}', [TwitterController::class, 'getUser'])->name('user.get'
 Route::get('/user/{id}/tweets', [TwitterController::class, 'getUserTweets'])->name('tweets.user');
 Route::get('/user/{id}/tweets2', [TwitterController::class, 'getUserTweets2'])->name('tweets.user2');
 Route::get('/tweet-media', [TwitterController::class, 'postTweetWithMedia'])->name('tweet.media');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/users/{user}/follow', [UserFollowController::class, 'follow'])->name('users.follow');
+    Route::post('/users/{user}/unfollow', [UserFollowController::class, 'unfollow'])->name('users.unfollow');
+    Route::post('/users/{user}/toggle-follow', [UserFollowController::class, 'toggle'])->name('users.toggle-follow');
+});
 
 require __DIR__ . '/auth.php';

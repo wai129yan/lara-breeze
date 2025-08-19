@@ -2,23 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserFollow;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserFollowController extends Controller
 {
-    public function follow(Request $request)
+    public function follow(User $user)
     {
-        $request->validate([
-            'follower_id' => 'required|exists:users,id',
-            'followed_id' => 'required|exists:users,id|different:follower_id',
-        ]);
+        $follower = Auth::user();
+        if ($follower->id === $user->id) {
+            return response()->json(['error' => 'You cannot follow yourself'], 400);
+        }
+        $follower->follow($user);
+        return response()->json(['message' => 'Followed successfully', 'following' => true]);
+    }
 
-        $follow = UserFollow::firstOrCreate([
-            'follower_id' => $request->follower_id,
-            'followed_id' => $request->followed_id,
-        ]);
+    public function unfollow(User $user)
+    {
+        $follower = Auth::user();
+        $follower->unfollow($user);
+        return response()->json(['message' => 'Unfollowed successfully', 'following' => false]);
+    }
 
-        return response()->json(['message' => 'Followed successfully', 'data' => $follow]);
+    public function toggle(User $user)
+    {
+        $follower = Auth::user();
+
+        if ($follower->id === $user->id) {
+            return response()->json(['error' => 'You cannot follow yourself'], 400);
+        }
+
+        $following = $follower->toggleFollow($user);
+        $isFollowing = $follower->isFollowing($user);
+
+        // Get the updated follower count for the user being followed/unfollowed
+        $followerCount = $user->followers()->count();
+
+        return response()->json([
+            'message' => $isFollowing ? 'Followed successfully' : 'Unfollowed successfully',
+            'following' => $isFollowing,
+            'followers_count' => $followerCount
+        ]);
     }
 }

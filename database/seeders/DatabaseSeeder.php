@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             // CommentSeeder::class,
             ClapSeeder::class,
-            // UserFollowSeeder::class,
+            UserFollowSeeder::class,
             // SeriesPostSeeder::class,
             // CategorySeeder::class
         ]);
